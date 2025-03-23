@@ -10,41 +10,124 @@ def actualizar_label(labels_dict, nombre, nuevo_texto):
     # Actualizar el texto de un Label existente
     if nombre in labels_dict:
         labels_dict[nombre].config(text=nuevo_texto)
+def crear_ventana_monitor():
+    root = tk.Tk()
+    root.geometry("1024x600")
+    root.config(bg="AntiqueWhite")
 
-root = tk.Tk()
-root.geometry("1024x600")
-root.config(bg="beige")
+    # Diccionario para almacenar los labels
+    labels = {}
+    # LABEL DE BIENVENIDA
+    crear_label(root, "ACUAPONIC MONITOR", "label_Welcome", labels, 0, "#F0E68C", "black", 25)
 
-# Diccionario para almacenar los labels
-labels = {}
-# LABEL DE BIENVENIDA
-crear_label(root, "ACUAPONIC MONITOR", "label_Welcome", labels, 0, "beige", "black", 25)
+##################APARTADO DE TEMPERATURA DEL AGUA#######################
 
-# LABEL TEMPERATURA AGUA
-crear_label(root, "TEMPERATURA AGUA", "label_temp_agua", labels, 2, "white", "black", 12)
-crear_label(root, "35.6", "label_temp_agua_data", labels, 0, "beige", "green", 15)
+    #Creacion de contenedores
+    temp_agua_conteiner = tk.Frame(root,bg="Wheat")
+    temp_agua_conteiner.pack(padx=10,pady=10,fill="x")
 
-# LABEL TEMPERATURA AMBIENTE
-crear_label(root, "TEMPERATURA AMBIENTE", "label_temp_amb", labels, 2, "white", "black", 12)
-crear_label(root, "40.1", "label_temp_amb_data", labels, 0, "beige", "green", 15)
+    # LABEL TEMPERATURA AGUA
+    crear_label(temp_agua_conteiner, "TEMPERATURA AGUA :", "label_temp_agua", labels, 0, "Wheat", "black", 20)
+    labels["label_temp_agua"].pack(side="left", expand=True)
+    labels["label_temp_agua"].config(anchor = "w")
+    crear_label(temp_agua_conteiner, "35.6", "label_temp_agua_data", labels, 0, "Wheat", "green", 20)
+    labels["label_temp_agua_data"].pack(side="right", expand=True, padx = 100)
+    labels["label_temp_agua_data"].config(anchor = "e")
+#############################################################################  
 
-# LABEL TURBIDEZ
-crear_label(root, "TURBIDEZ", "label_turb", labels, 2, "white", "black", 12)
-crear_label(root, "70%", "label_turb_data", labels, 0, "beige", "green", 15)
+##################APARTADO DE TEMPERATURA DEL AMBIENTE#######################
 
-# LABEL LUMINOSIDAD
-crear_label(root, "LUMINOSIDAD", "label_lum", labels, 2, "white", "black", 12)
-crear_label(root, "35%", "label_lum_data", labels, 0, "beige", "green", 15)
+    #Creacion de contenedores
+    temp_amb_conteiner = tk.Frame(root,bg="Wheat")
+    temp_amb_conteiner.pack(padx=10,pady=10,fill="x")
 
-# LABEL HUMEDAD
-crear_label(root, "HUMEDAD", "label_hum", labels, 2, "white", "black", 12)
-crear_label(root, "16%", "label_hum_data", labels, 0, "beige", "green", 15)
+    # LABEL TEMPERATURA AMBIENTE
+    crear_label(temp_amb_conteiner, "TEMPERATURA AMBIENTE :", "label_temp_amb", labels, 0, "Wheat", "black", 20)
+    labels["label_temp_amb"].pack(side="left", expand=True)
+    labels["label_temp_amb"].config(anchor = "w")
+    crear_label(temp_amb_conteiner, "40.1", "label_temp_amb_data", labels, 0, "Wheat", "green", 20)
+    labels["label_temp_amb_data"].pack(side="right", expand=True, padx = 100)
+    labels["label_temp_amb_data"].config(anchor = "e")
+#############################################################################   
 
-# LABEL PH
-crear_label(root, "PH DE AGUA", "label_ph", labels, 2, "white", "black", 12)
-crear_label(root, "365", "label_ph_data", labels, 0, "beige", "green", 15)
+##################APARTADO DE TURBIDEZ#######################
 
-# Actualizar un label después de un tiempo
-root.after(2000, actualizar_label, labels, "label1", "Texto actualizado para Label 1")
+    #Creacion de contenedores
+    turb_conteiner = tk.Frame(root,bg="Wheat")
+    turb_conteiner.pack(padx=10,pady=10,fill="x")
 
-root.mainloop()
+    # LABEL TURBIDEZ
+    crear_label(turb_conteiner, "TURBIDEZ :", "label_turb", labels, 0, "Wheat", "black", 20)
+    labels["label_turb"].pack(side="left", expand=True)
+    labels["label_turb"].config(anchor = "w")
+    crear_label(turb_conteiner, "70%", "label_turb_data", labels, 0, "Wheat", "green", 20)
+    labels["label_turb_data"].pack(side="right", expand=True, padx = 100)
+    labels["label_turb_data"].config(anchor = "e")
+#############################################################
+
+##################APARTADO DE LUMINOSIDAD#######################
+
+    #Creacion de contenedores
+    lum_conteiner = tk.Frame(root,bg="Wheat")
+    lum_conteiner.pack(padx=10,pady=10,fill="x")
+
+    # LABEL LUMINOSIDAD
+    crear_label(lum_conteiner, "LUMINOSIDAD :", "label_lum", labels, 0, "Wheat", "black", 20)
+    labels["label_lum"].pack(side="left", expand=True)
+    labels["label_lum"].config(anchor = "w")
+    crear_label(lum_conteiner, "35%", "label_lum_data", labels, 0, "Wheat", "green", 20)
+    labels["label_lum_data"].pack(side="right", expand=True, padx = 100)
+    labels["label_lum_data"].config(anchor = "e")
+################################################################
+
+##################APARTADO DE HUMEDAD#######################
+
+    #Creacion de contenedores
+    hum_conteiner = tk.Frame(root,bg="Wheat")
+    hum_conteiner.pack(padx=10,pady=10,fill="x")
+
+    # LABEL HUMEDAD
+    crear_label(hum_conteiner, "HUMEDAD :", "label_hum", labels, 0, "Wheat", "black", 20)
+    labels["label_hum"].pack(side="left", expand=True)
+    labels["label_hum"].config(anchor = "w")
+    crear_label(hum_conteiner, "16%", "label_hum_data", labels, 0, "Wheat", "green", 20)
+    labels["label_hum_data"].pack(side="right", expand=True, padx = 100)
+    labels["label_hum_data"].config(anchor = "e")
+################################################################
+
+##################APARTADO DE PH################################
+
+    #Creacion de contenedores
+    ph_conteiner = tk.Frame(root,bg="Wheat")
+    ph_conteiner.pack(padx=10,pady=10,fill="x")
+
+    # LABEL PH
+    crear_label(ph_conteiner, "PH DE AGUA :", "label_ph", labels, 0, "Wheat", "black", 20)
+    labels["label_ph"].pack(side="left", expand=True)
+    labels["label_ph"].config(anchor = "w")    
+    crear_label(ph_conteiner, "365", "label_ph_data", labels, 0, "Wheat", "green", 20)
+    labels["label_ph_data"].pack(side="right", expand=True, padx = 100)
+    labels["label_ph_data"].config(anchor = "e")    
+################################################################
+
+##################APARTADO DE CAUDAL################################
+
+    #Creacion de contenedores
+    caudal_conteiner = tk.Frame(root,bg="Wheat")
+    caudal_conteiner.pack(padx=10,pady=10,fill="x")
+
+    # LABEL PH
+    crear_label(caudal_conteiner, "CAUDAL :", "label_caudal", labels, 0, "Wheat", "black", 20)
+    labels["label_caudal"].pack(side="left", expand=True)
+    labels["label_caudal"].config(anchor = "w")    
+    crear_label(caudal_conteiner, "20%", "label_caudal_data", labels, 0, "Wheat", "green", 20)
+    labels["label_caudal_data"].pack(side="right", expand=True, padx = 100)
+    labels["label_caudal_data"].config(anchor = "e")    
+####################################################################
+
+    # Actualizar un label después de un tiempo
+    root.after(2000, actualizar_label, labels, "label1", "Texto actualizado para Label 1")
+
+    root.mainloop()
+
+#crear_ventana_monitor()
