@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 import main as main
 def create_monitoring():
     root.destroy()
@@ -17,27 +18,34 @@ def actualizar_label(labels_dict, nombre, nuevo_texto):
 
 root = tk.Tk()
 root.geometry("1024x600")
-root.config(bg="beige")
+root.config(bg="#6A9BAE")
 root.title("ACUAPONIAC SYSTEM")
 labels = {}
-
+image = tk.PhotoImage(file="sources\logo_ambiente.png")
+resized_img = image.subsample(10, 10)
 # LABEL DE BIENVENIDA
-crear_label(root, "ACUAPONIC MENU", "label_Welcome", labels, 0, "gray", "black", 25)
+
+label_conteiner = tk.Frame(root, bg="#A3C1D1", bd=2, relief="ridge")
+label_conteiner.place(relx=0.5, rely=0.5, anchor="center")
+crear_label(label_conteiner, "ACUAPONIC MENU", "label_Welcome", labels, 0, "#A3C1D1", "White", 35)
+labels["label_Welcome"].config(anchor = "center")
+labels["label_Welcome"].pack(padx = 50)
+
+# IMAGEN
+label_image = ttk.Label(label_conteiner,image=resized_img, background="#A3C1D1")
+label_image.pack()
 
 # LABEL DE SELECCION
-crear_label(root, "SELECCIONA UNA DE LAS SIGUIENTES OPCIONES:", "label_Welcome", labels, 0, "beige", "black", 25)
-
-# CREACION DE CONTENEDOR PARA BOTONES
-botones = tk.Frame(root,bg="gray")
-botones.pack(padx=10, pady=10, fill='x',side="bottom")
+crear_label(label_conteiner, "SELECCIONA UNA DE LAS SIGUIENTES OPCIONES:", "label_options", labels, 0, "#A3C1D1", "black", 20)
+labels["label_options"].pack(padx=25, pady=25)
 
 # BOTON DE MONITOREO
-boton1 = tk.Button(botones, text="MONITOREO", font=("Arial", 16, "bold"), command=create_monitoring)
-boton1.pack(fill='x', padx=5, pady=5, side="right", expand=True)
+boton1 = tk.Button(label_conteiner, text="MONITOREO", font=("Arial", 16, "bold"), command=create_monitoring,bg="white")
+boton1.pack(fill='x', padx=25, pady=25, side="top", expand=True)
 
 #BOTON DE AJUSTE
-boton2 = tk.Button(botones, text="AJUSTES", font=("Arial", 16, "bold"))
-boton2.pack(fill='x', padx=5, pady=5, side="left", expand=True)
+boton2 = tk.Button(label_conteiner, text="AJUSTES", font=("Arial", 16, "bold"),bg="white")
+boton2.pack(fill='x', padx=25, pady=25, side="top", expand=True)
 
 
 root.mainloop()
