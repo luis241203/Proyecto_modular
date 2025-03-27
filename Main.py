@@ -1,27 +1,27 @@
 import time
-import RPi.GPIO as GPIO
-from lora import LoRa
+from SX127x.LoRa import LoRa
+from SX127x.board_config import BOARD
 
-# Configura los pines para SPI
-GPIO.setmode(GPIO.BCM)
-lora = LoRa(spi_bus=0, spi_device=0, gpio_cs=8, gpio_rst=25, gpio_dio0=17)
+# Inicializa la Raspberry Pi y el LoRa
+BOARD.setup()
 
-# Configura el LoRa en modo transmisión
-lora.set_mode(LoRa.MODE_TX)
+# Clase LoRa para manejar el envío de mensajes
+class LoRaRaspberry(LoRa):
+    def __init__(self, verbose=False):
+        super(LoRaRaspberry, self).__init__(verbose)
 
-# El mensaje que se va a enviar
-message = "Hello, LoRa! Esperando respuesta..."
+    def on_rx_done(self):
+        print("Mensaje recibido:", self.read_payload(nocheck=True))
+        self.clear_irq_flags(RxDone=1)
 
-# Enviar el mensaje
-print("Enviando:", message)
-lora.send(message)
+# Configuración de LoRa
+lora = LoRaRaspberry(verbose=True)
+lora.set_mode(LoRa.MODE.SLEEP)  # Modo de reposo inicial
+lora.set_mode(LoRa.MODE.TX)  # Modo de transmisión
 
-# Ahora el transmisor espera la respuesta
-lora.set_mode(LoRa.MODE_RX)
-print("Esperando respuesta...")
 while True:
-    if lora.received():
-        response = lora.receive()
-        print("Respuesta recibida:", response)
-        break  # Sale del loop cuando recibe una respuesta
-    time.sleep(1)  # Espera un segundo antes de volver a comprobar
+    message = "Hello LoRa!"
+    print("Enviando:", message)
+    lora.write_payload([ord(c) for c in message])  # Convierte el mensaje a bytes
+    lora.set_mode(LoRa.MODE.TX)  # Enviar el mensaje
+    time.sleep(2)  # Esperar antes de enviar el siguiente mensaje
