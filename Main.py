@@ -1,15 +1,13 @@
 import time
-from LoRa import LoRa
-from LoRa import ModemConfig
+from RFM95 import RFM95
 
 # Configuración del LoRa
-lora = LoRa(verbose=True)
-lora.set_mode(LoRa.MODE.SLEEP)  # Establecer en modo SLEEP al inicio
-lora.set_mode(LoRa.MODE.TX)  # Establecer en modo de transmisión
+lora = RFM95(spi_bus=0, spi_device=0, gpio_cs=8, gpio_rst=25, gpio_dio0=17)
+lora.set_frequency(915.0)  # Establece la frecuencia (por ejemplo, 915 MHz)
 
+# Enviar mensaje
 while True:
     message = "Hello LoRa!"
     print("Enviando:", message)
-    lora.write_payload([ord(c) for c in message])  # Convertir el mensaje a bytes
-    lora.set_mode(LoRa.MODE.TX)  # Enviar el mensaje
+    lora.send(message.encode())  # Envía el mensaje codificado en bytes
     time.sleep(2)  # Espera antes de enviar el siguiente mensaje
