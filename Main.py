@@ -1,28 +1,55 @@
-import time
-import RPi.GPIO as GPIO
-from pyLoRa import LoRa
 
-# Configuración de pines
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
+import sys
+from time import sleep
+from SX127x.LoRa import *
+from SX127x.board_config import BOARD
+# import the python libraries
+BOARD.setup()
+# is used to set the board and LoRa parameters
+class LoRaBeacon(LoRa):
 
-# Inicializa el objeto LoRa
-lora = LoRa(cs_pin=8, reset_pin=17, irq_pin=25)  # Ajusta los pines a tu configuración
-lora.set_mode(LoRa.MODE_TX)  # Modo de transmisión
+    def __init__(self, verbose=False):
+        super(LoRaBeacon, self).__init__(verbose)
+        self.set_mode(MODE.SLEEP)
+        # sleep to save power
+        self.set_dio_mapping([1,0,0,0,0,0])
+        #go to this web to read the doc: https://cdn-shop.adafruit.com/product-files/3179/sx1276_77_78_79.pdf
+    def start(self):
+        global args
+        self.write_payload([])
+        self.set_mode(MODE.TX)
+        while True:
+              sleep(1)
+    def on_tx_done(self):
+        self.set_mode(MODE.STDBY)
+        self.clear_irq_flags(TxDone=1)
+        sys.stdout.flush()
+        sleep(2)
+        data=input('>>> ')
+        a=[int(hex(ord(m)), 0) for m in data]
+        #set format array data in 1 byte 
+        print(a)
+        self.write_payload(a)
+        self.set_mode(MODE.TX)
 
-# Configura parámetros
-lora.set_frequency(868.0)  # Ajusta la frecuencia en MHz, dependiendo de tu región
-lora.set_spreading_factor(7)  # Ajusta el factor de expansión
-lora.set_bandwidth(125)  # Ancho de banda en kHz
 
-# Función para enviar un mensaje
-def send_lora_message(message):
-    lora.begin_packet()
-    lora.write_bytes(message.encode())  # Envía el mensaje como bytes
-    lora.end_packet()
-    print(f"Mensaje enviado: {message}")
+lora = LoRaBeacon(verbose=False)
 
-# Enviar un mensaje cada 2 segundos
-while True:
-    send_lora_message("¡Hola desde LoRa!")
-    time.sleep(2)
+lora.set_pa_config(pa_select=1)
+
+assert(lora.get_agc_auto_on() == 1)
+
+try: sleep(0.001)
+except: pass
+
+try:
+    lora.start()
+except KeyboardInterrupt:
+    sys.stdout.flush()
+    sys.stderr.write("KeyboardInterrupt\n")
+ #print the transmitted values on the console and terminate the program using a keyboard interrupt   
+finally:
+    sys.stdout.flush()
+    lora.set_mode(MODE.SLEEP)
+    BOARD.teardown()
+
