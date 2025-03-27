@@ -1,128 +1,83 @@
-#!/usr/bin/env python3
-
-""" This program asks a client for data and waits for the response, then sends an ACK. """
-
-# Copyright 2018 Rui Silva.
-#
-# This file is part of rpsreal/pySX127x, fork of mayeranalytics/pySX127x.
-#
-# pySX127x is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public
-# License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
-# version.
-#
-# pySX127x is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
-# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
-# details.
-#
-# You can be released from the requirements of the license by obtaining a commercial license. Such a license is
-# mandatory as soon as you develop commercial activities involving pySX127x without disclosing the source code of your
-# own applications, or shipping pySX127x with a closed source product.
-#
-# You should have received a copy of the GNU General Public License along with pySX127.  If not, see
-# <http://www.gnu.org/licenses/>.
-
+import spidev
 import time
-from SX127x.LoRa import *
-#from SX127x.LoRaArgumentParser import LoRaArgumentParser
-from SX127x.board_config import BOARD
 
-BOARD.setup()
-BOARD.reset()
-#parser = LoRaArgumentParser("Lora tester")
+# Configuración de la conexión SPI
+spi = spidev.SpiDev()
+spi.open(0, 0)  # Usar el bus SPI 0 y el chip select 0
+spi.max_speed_hz = 5000000  # Ajustar la velocidad de transmisión (5 MHz en este caso)
+spi.mode = 0b00  # Modo SPI (Polarity = 0, Phase = 0)
 
+# Pin Chip Select (CS)
+CS_PIN = 8  # GPIO pin para CS (Chip Select)
+DIO0_PIN = 17  # GPIO pin para DIO0 (interrupciones)
 
-class mylora(LoRa):
-    def __init__(self, verbose=False):
-        super(mylora, self).__init__(verbose)
-        self.set_mode(MODE.SLEEP)
-        self.set_dio_mapping([0] * 6)
-        self.var=0
+# Definir algunos registros importantes del SX1278
+REG_FIFO = 0x00
+REG_OP_MODE = 0x01
+REG_FRF_MSB = 0x06
+REG_FRF_MID = 0x07
+REG_FRF_LSB = 0x08
+REG_DIO_MAPPING1 = 0x40
+REG_IRQ_FLAGS = 0x12
+REG_PKT_SNR_VALUE = 0x19
+REG_MODEM_CONFIG = 0x1D
 
-    def on_rx_done(self):
-        BOARD.led_on()
-        #print("\nRxDone")
-        self.clear_irq_flags(RxDone=1)
-        payload = self.read_payload(nocheck=True)
-        print ("Receive: ")
-        print(bytes(payload).decode("utf-8",'ignore')) # Receive DATA
-        BOARD.led_off()
-        time.sleep(2) # Wait for the client be ready
-        print ("Send: ACK")
-        self.write_payload([255, 255, 0, 0, 65, 67, 75, 0]) # Send ACK
-        self.set_mode(MODE.TX)
-        self.var=1
+# Comando para leer un registro
+def read_register(register):
+    response = spi.xfer2([register & 0x7F, 0x00])  # Leer valor del registro
+    return response[1]
 
-    def on_tx_done(self):
-        print("\nTxDone")
-        print(self.get_irq_flags())
+# Comando para escribir en un registro
+def write_register(register, value):
+    spi.xfer2([register | 0x80, value])
 
-    def on_cad_done(self):
-        print("\non_CadDone")
-        print(self.get_irq_flags())
+# Inicialización del LoRa
+def init_lora():
+    # Configurar el modo de operación (modo LoRa, transmisor o receptor)
+    write_register(REG_OP_MODE, 0x80)  # Modo LoRa, modo de recepción
 
-    def on_rx_timeout(self):
-        print("\non_RxTimeout")
-        print(self.get_irq_flags())
+    # Configuración de frecuencia (Ejemplo: 915 MHz, que corresponde a 0xD9, 0x06, 0x00)
+    write_register(REG_FRF_MSB, 0xD9)
+    write_register(REG_FRF_MID, 0x06)
+    write_register(REG_FRF_LSB, 0x00)
 
-    def on_valid_header(self):
-        print("\non_ValidHeader")
-        print(self.get_irq_flags())
+    # Configurar otros registros según sea necesario (como la potencia de transmisión)
+    write_register(REG_MODEM_CONFIG, 0x72)  # Ejemplo de configuración de modem (ajustar según necesidades)
 
-    def on_payload_crc_error(self):
-        print("\non_PayloadCrcError")
-        print(self.get_irq_flags())
+    # Configuración de interrupciones (DIO0)
+    write_register(REG_DIO_MAPPING1, 0x00)  # Mapear DIO0 a IRQ
 
-    def on_fhss_change_channel(self):
-        print("\non_FhssChangeChannel")
-        print(self.get_irq_flags())
+    print("LoRa inicializado")
 
-    def start(self):          
-        while True:
-            while (self.var==0):
-                print ("Send: INF")
-                self.write_payload([255, 255, 0, 0, 73, 78, 70, 0]) # Send INF
-                self.set_mode(MODE.TX)
-                time.sleep(3) # there must be a better solution but sleep() works
-                self.reset_ptr_rx()
-                self.set_mode(MODE.RXCONT) # Receiver mode
-            
-                start_time = time.time()
-                while (time.time() - start_time < 10): # wait until receive data or 10s
-                    pass;
-            
-            self.var=0
-            self.reset_ptr_rx()
-            self.set_mode(MODE.RXCONT) # Receiver mode
-            time.sleep(10)
+# Enviar datos a través de LoRa
+def send_data(data):
+    # Asegurarse de que el FIFO esté vacío antes de escribir datos
+    write_register(REG_OP_MODE, 0x81)  # Modo LoRa, modo de transmisión
 
-lora = mylora(verbose=False)
-#args = parser.parse_args(lora) # configs in LoRaArgumentParser.py
+    # Colocar datos en el FIFO para enviarlos
+    for byte in data:
+        write_register(REG_FIFO, byte)
 
-#     Slow+long range  Bw = 125 kHz, Cr = 4/8, Sf = 4096chips/symbol, CRC on. 13 dBm
-lora.set_pa_config(pa_select=1, max_power=21, output_power=15)
-lora.set_bw(BW.BW125)
-lora.set_coding_rate(CODING_RATE.CR4_8)
-lora.set_spreading_factor(12)
-lora.set_rx_crc(True)
-#lora.set_lna_gain(GAIN.G1)
-#lora.set_implicit_header_mode(False)
-lora.set_low_data_rate_optim(True)
+    print(f"Datos enviados: {data}")
 
-#  Medium Range  Defaults after init are 434.0MHz, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC on 13 dBm
-#lora.set_pa_config(pa_select=1)
+# Leer datos recibidos
+def receive_data():
+    # Cambiar a modo recepción
+    write_register(REG_OP_MODE, 0x85)  # Modo LoRa, modo de recepción
 
+    # Leer el valor de la señal recibida
+    snr = read_register(REG_PKT_SNR_VALUE)  # Leer la relación señal/ruido
 
-assert(lora.get_agc_auto_on() == 1)
+    print(f"Señal recibida con SNR: {snr}")
+    # Aquí puedes leer más registros, como el FIFO, para obtener los datos recibidos.
 
-try:
-    print("START")
-    lora.start()
-except KeyboardInterrupt:
-    sys.stdout.flush()
-    print("Exit")
-    sys.stderr.write("KeyboardInterrupt\n")
-finally:
-    sys.stdout.flush()
-    print("Exit")
-    lora.set_mode(MODE.SLEEP)
-    BOARD.teardown()
+# Main loop
+if __name__ == "__main__":
+    init_lora()  # Inicializar LoRa
+
+    while True:
+        send_data([0x01, 0x02, 0x03])  # Enviar datos de ejemplo
+        time.sleep(2)
+
+        receive_data()  # Leer datos si hay algún mensaje recibido
+        time.sleep(1)
