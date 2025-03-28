@@ -115,15 +115,33 @@ if __name__ == "__main__":
         print("Esperando datos en 433 MHz (Ctrl+C para salir)...")
         
         while True:
-            data = receive_data()  # Recibe datos RAW sin conversión
-            if data:
-                print(f"Paquete recibido: {data} | RSSI: {read_register(REG_PKT_RSSI_VALUE)-164} dBm")
-            time.sleep(0.05)
+            # Verificar recepción continuamente
+            irq_flags = read_register(REG_IRQ_FLAGS)
+            
+            if irq_flags & 0x40:  # Flag RxDone activo
+                # Limpiar TODAS las interrupciones primero
+                write_register(REG_IRQ_FLAGS, 0xFF)
+                
+                # Procesar paquete
+                length = read_register(REG_RX_NB_BYTES)
+                current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
+                write_register(REG_FIFO_ADDR_PTR, current_addr)
+                
+                data = [read_register(REG_FIFO) for _ in range(length)]
+                rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste 433 MHz
+                snr = read_register(REG_PKT_SNR_VALUE) * 0.25
+                
+                print(f"Paquete: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
+                
+                # Preparar para siguiente recepción
+                write_register(REG_FIFO_ADDR_PTR, 0x00)  # Resetear puntero FIFO
+                write_register(REG_OP_MODE, 0x85)  # Volver a modo RX continuo
+            
+            time.sleep(0.01)  # Pequeña pausa
             
     except KeyboardInterrupt:
-        print("\nInterrupción por usuario")
+        print("\nRecepción detenida")
     finally:
-        # Liberación segura de recursos
         spi.close()
         GPIO.cleanup()
-        print("SPI y GPIO liberados correctamente")
+        print("Recursos liberados")
