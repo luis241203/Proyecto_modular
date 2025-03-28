@@ -4,18 +4,18 @@ import RPi.GPIO as GPIO
 
 # Configuración GPIO
 GPIO.setmode(GPIO.BCM)
-CS_PIN = 8
 DIO0_PIN = 17
 RESET_PIN = 22  # Pin opcional de reset
 
 # Configuración SPI
 spi = spidev.SpiDev()
 spi.open(0, 0)  # Bus 0, CE0
-spi.max_speed_hz = 1000000  # 1MHz es suficiente para LoRa
+spi.max_speed_hz = 500000  # 1MHz es suficiente para LoRa
 spi.mode = 0b00
 
 # Registros SX1278
 REG_FIFO = 0x00
+REG_FIFO_RX_CURRENT_ADDR = 0x10
 REG_OP_MODE = 0x01
 REG_FRF_MSB = 0x06
 REG_FRF_MID = 0x07
@@ -38,22 +38,13 @@ REG_PAYLOAD_LENGTH = 0x22
 REG_DIO_MAPPING1 = 0x40
 REG_VERSION = 0x42
 
-def cs_enable():
-    GPIO.output(CS_PIN, GPIO.LOW)
-
-def cs_disable():
-    GPIO.output(CS_PIN, GPIO.HIGH)
 
 def read_register(register):
-    cs_enable()
     response = spi.xfer2([register & 0x7F, 0x00])
-    cs_disable()
     return response[1]
 
 def write_register(register, value):
-    cs_enable()
     spi.xfer2([register | 0x80, value])
-    cs_disable()
 
 def init_lora():
     # Configuración básica del módulo LoRa
@@ -119,35 +110,26 @@ def send_data(data):
     print(f"Datos enviados: {data}")
 
 def receive_data():
-    # Cambiar a modo RX continuo
-    write_register(REG_OP_MODE, 0x85)
-    
-    # Esperar hasta que llegue un paquete
+    write_register(REG_OP_MODE, 0x85)  # RX continuo
     while (read_register(REG_IRQ_FLAGS) & 0x40) == 0:
-        time.sleep(0.1)
-    
-    # Leer datos recibidos
+        time.sleep(0.01)  # Espera más corta
+
     rx_nb_bytes = read_register(REG_RX_NB_BYTES)
-    write_register(REG_FIFO_ADDR_PTR, read_register(REG_FIFO_RX_CURRENT_ADDR))
-    
-    data = []
-    for i in range(rx_nb_bytes):
-        data.append(read_register(REG_FIFO))
-    
-    # Limpiar flag de RX
-    write_register(REG_IRQ_FLAGS, 0x40)
-    
-    # Leer RSSI y SNR
-    rssi = read_register(REG_PKT_RSSI_VALUE)
-    snr = read_register(REG_PKT_SNR_VALUE)
-    
-    print(f"Datos recibidos: {data}, RSSI: {rssi}, SNR: {snr}")
-    return data
+    if rx_nb_bytes > 0:
+        write_register(REG_FIFO_ADDR_PTR, read_register(REG_FIFO_RX_CURRENT_ADDR))
+        data = [read_register(REG_FIFO) for _ in range(rx_nb_bytes)]
+        write_register(REG_IRQ_FLAGS, 0x40)  # Limpiar flag
+        
+        # Cálculo preciso de RSSI (para 915 MHz)
+        rssi = read_register(REG_PKT_RSSI_VALUE) - 157
+        snr = read_register(REG_PKT_SNR_VALUE) * 0.25
+        print(f"Datos: {data}, RSSI: {rssi} dBm, SNR: {snr} dB")
+        return data
+    return None
 
 if __name__ == "__main__":
     try:
         # Inicializar GPIO
-        GPIO.setup(CS_PIN, GPIO.OUT)
         GPIO.setup(DIO0_PIN, GPIO.IN)
         GPIO.setup(RESET_PIN, GPIO.OUT)
         
