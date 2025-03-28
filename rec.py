@@ -114,18 +114,34 @@ if __name__ == "__main__":
         if not init_lora():
             raise RuntimeError("Fallo al inicializar LoRa")
 
-        print("Esperando datos en 433 MHz (Ctrl+C para salir)...")
+        print("Recepción activa en 433 MHz. Presiona Ctrl+C para salir...")
         
+        # Bucle principal de recepción
         while True:
-            data = receive_data()  # Recibe datos RAW sin conversión
-            if data:
-                print(f"Paquete recibido: {data} | RSSI: {read_register(REG_PKT_RSSI_VALUE)-164} dBm")
-            time.sleep(0.05)
-            
+            try:
+                data = receive_data()  # Intenta recibir datos
+                if data:
+                    rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste para 433MHz
+                    print(f"Paquete recibido: {data} | RSSI: {rssi} dBm")
+                
+                time.sleep(0.01)  # Pequeña pausa para evitar sobrecarga
+                
+            except KeyboardInterrupt:
+                raise  # Re-lanza la interrupción para manejo externo
+                
+            except Exception as e:
+                print(f"Error en recepción: {str(e)}")
+                print("Reintentando en 1 segundo...")
+                time.sleep(1)
+                if not init_lora():  # Reintenta inicialización
+                    print("Error crítico: No se puede recuperar la conexión")
+                    break
+                    
     except KeyboardInterrupt:
-        print("\nInterrupción por usuario")
+        print("\nRecepción detenida por el usuario")
+        
     finally:
-        # Liberación segura de recursos
+        # Liberación garantizada de recursos
         spi.close()
         GPIO.cleanup()
-        print("SPI y GPIO liberados correctamente")
+        print("Recursos liberados correctamente")
