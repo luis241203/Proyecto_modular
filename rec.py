@@ -99,6 +99,7 @@ def receive_data():
         # Limpiar flags
         write_register(REG_IRQ_FLAGS, 0xFF)
         write_register(REG_FIFO_ADDR_PTR, 0x00)
+        write_register(REG_OP_MODE, 0x85)
         
         print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
         return data
