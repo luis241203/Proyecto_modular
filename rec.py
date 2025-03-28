@@ -26,6 +26,9 @@ REG_MODEM_CONFIG1 = 0x1D
 REG_MODEM_CONFIG2 = 0x1E
 REG_PKT_SNR_VALUE = 0x19
 REG_PKT_RSSI_VALUE = 0x1A
+# Registros SX1278 (completos para RX)
+REG_FIFO_ADDR_PTR = 0x0D
+REG_FIFO_RX_BASE_ADDR = 0x0F  # <-- ¡Este faltaba!
 
 def read_register(register):
     return spi.xfer2([register & 0x7F, 0x00])[1]
@@ -45,8 +48,8 @@ def init_lora():
     write_register(REG_OP_MODE, 0x80)
     time.sleep(0.1)
     
-    # Verificar versión del chip (0x12 para SX1278)
-    if read_register(0x42) != 0x12:
+    # Verificar versión del chip
+    if read_register(0x42) != 0x12:  # REG_VERSION
         print("Error: Chip no reconocido")
         return False
     
@@ -55,18 +58,17 @@ def init_lora():
     write_register(REG_FRF_MID, 0xC0)
     write_register(REG_FRF_LSB, 0x00)
     
-    # Configuración modem (BW=125kHz, CR=4/5, Explicit Header)
-    write_register(REG_MODEM_CONFIG1, 0x72)
+    # Config modem
+    write_register(REG_MODEM_CONFIG1, 0x72)  # BW=125kHz, CR=4/5
     write_register(REG_MODEM_CONFIG2, 0x74)  # SF=7, CRC enabled
     
-    # Configurar FIFO RX
-    write_register(REG_FIFO_RX_BASE_ADDR, 0x00)
-    
-    # Configurar interrupción DIO0 para RxDone (opcional)
-    write_register(0x40, 0x00)  # DIO0=00 (RxDone)
+    # Config FIFO RX
+    write_register(REG_FIFO_RX_BASE_ADDR, 0x00)  # Dirección base RX
+    write_register(REG_FIFO_ADDR_PTR, 0x00)       # Resetear puntero
     
     # Modo RX continuo
     write_register(REG_OP_MODE, 0x85)
+    time.sleep(0.1)
     
     print("LoRa listo para recibir")
     return True
