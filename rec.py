@@ -4,7 +4,7 @@ import RPi.GPIO as GPIO
 
 # Configuración GPIO
 GPIO.setmode(GPIO.BCM)
-DIO0_PIN = 17  # Pin para interrupción RxDone (opcional pero recomendado)
+DIO0_PIN = 17  # Pin para interrupción RxDone
 RESET_PIN = 22  # Pin de reset
 
 # Configuración SPI
@@ -13,7 +13,7 @@ spi.open(0, 0)  # Bus 0, CE0
 spi.max_speed_hz = 500000
 spi.mode = 0b00
 
-# Registros SX1278 (para recepción)
+# Registros SX1278
 REG_OP_MODE = 0x01
 REG_FRF_MSB = 0x06
 REG_FRF_MID = 0x07
@@ -26,9 +26,9 @@ REG_MODEM_CONFIG1 = 0x1D
 REG_MODEM_CONFIG2 = 0x1E
 REG_PKT_SNR_VALUE = 0x19
 REG_PKT_RSSI_VALUE = 0x1A
-# Registros SX1278 (completos para RX)
 REG_FIFO_ADDR_PTR = 0x0D
-REG_FIFO_RX_BASE_ADDR = 0x0F  # <-- ¡Este faltaba!
+REG_FIFO_RX_BASE_ADDR = 0x0F
+REG_VERSION = 0x42
 
 def read_register(register):
     return spi.xfer2([register & 0x7F, 0x00])[1]
@@ -49,28 +49,31 @@ def init_lora():
     time.sleep(0.1)
     
     # Verificar versión del chip
-    if read_register(0x42) != 0x12:  # REG_VERSION
+    if read_register(REG_VERSION) != 0x12:
         print("Error: Chip no reconocido")
         return False
     
-    # Frecuencia 915 MHz
-    write_register(REG_FRF_MSB, 0xE4)
-    write_register(REG_FRF_MID, 0xC0)
+    # Frecuencia 433 MHz (Registros FRF)
+    write_register(REG_FRF_MSB, 0x6C)  # 433 MHz: 0x6C4000
+    write_register(REG_FRF_MID, 0x40)
     write_register(REG_FRF_LSB, 0x00)
     
-    # Config modem
-    write_register(REG_MODEM_CONFIG1, 0x72)  # BW=125kHz, CR=4/5
+    # Configuración modem
+    write_register(REG_MODEM_CONFIG1, 0x72)  # BW=125kHz, CR=4/5, Explicit Header
     write_register(REG_MODEM_CONFIG2, 0x74)  # SF=7, CRC enabled
     
     # Config FIFO RX
-    write_register(REG_FIFO_RX_BASE_ADDR, 0x00)  # Dirección base RX
-    write_register(REG_FIFO_ADDR_PTR, 0x00)       # Resetear puntero
+    write_register(REG_FIFO_RX_BASE_ADDR, 0x00)
+    write_register(REG_FIFO_ADDR_PTR, 0x00)
+    
+    # Configurar LNA (opcional para mejor recepción)
+    write_register(0x0C, 0x23)  # REG_LNA: LNA máxima ganancia
     
     # Modo RX continuo
     write_register(REG_OP_MODE, 0x85)
     time.sleep(0.1)
     
-    print("LoRa listo para recibir")
+    print("LoRa listo para recibir en 433 MHz")
     return True
 
 def receive_data():
@@ -83,14 +86,14 @@ def receive_data():
         
         # Leer datos del FIFO
         current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
-        write_register(0x0D, current_addr)  # FIFO_ADDR_PTR
+        write_register(REG_FIFO_ADDR_PTR, current_addr)
         
         data = []
         for _ in range(length):
             data.append(read_register(REG_FIFO))
         
-        # Leer RSSI y SNR
-        rssi = read_register(REG_PKT_RSSI_VALUE) - 157  # Ajuste para 915MHz
+        # Leer RSSI (ajuste para 433 MHz)
+        rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste específico para 433 MHz
         snr = read_register(REG_PKT_SNR_VALUE) * 0.25
         
         # Limpiar flags
@@ -103,16 +106,16 @@ def receive_data():
 
 if __name__ == "__main__":
     try:
-        # Configurar DIO0 como entrada (para interrupción)
+        # Configurar DIO0 como entrada
         GPIO.setup(DIO0_PIN, GPIO.IN)
         
         if init_lora():
-            print("Esperando datos...")
+            print("Esperando datos en 433 MHz...")
             while True:
                 data = receive_data()
                 if data:
                     print("Paquete válido recibido!")
-                time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga
+                time.sleep(0.1)
                 
     except KeyboardInterrupt:
         print("Recepción detenida")
