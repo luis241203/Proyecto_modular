@@ -106,19 +106,24 @@ def receive_data():
 
 if __name__ == "__main__":
     try:
-        # Configurar DIO0 como entrada
+        # Configuración inicial
         GPIO.setup(DIO0_PIN, GPIO.IN)
         
-        if init_lora():
-            print("Esperando datos en 433 MHz...")
-            while True:
-                data = receive_data()
-                if data:
-                    print("Paquete válido recibido!")
-                time.sleep(0.1)
-                
+        if not init_lora():
+            raise RuntimeError("Fallo al inicializar LoRa")
+
+        print("Esperando datos en 433 MHz (Ctrl+C para salir)...")
+        
+        while True:
+            data = receive_data()  # Recibe datos RAW sin conversión
+            if data:
+                print(f"Paquete recibido: {data} | RSSI: {read_register(REG_PKT_RSSI_VALUE)-164} dBm")
+            time.sleep(0.05)
+            
     except KeyboardInterrupt:
-        print("Recepción detenida")
+        print("\nInterrupción por usuario")
     finally:
+        # Liberación segura de recursos
         spi.close()
         GPIO.cleanup()
+        print("SPI y GPIO liberados correctamente")
