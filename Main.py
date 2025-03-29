@@ -50,9 +50,9 @@ def init_lora():
         print("Error: Chip no reconocido")
         return False
     
-    # Frecuencia 915 MHz
-    write_register(REG_FRF_MSB, 0xE4)
-    write_register(REG_FRF_MID, 0xC0)
+    # Frecuencia 433 MHz
+    write_register(REG_FRF_MSB, 0x6C)
+    write_register(REG_FRF_MID, 0x40)
     write_register(REG_FRF_LSB, 0x00)
     
     # Configuración modem

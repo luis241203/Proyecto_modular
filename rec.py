@@ -98,39 +98,32 @@ def receive_data():
         snr = read_register(REG_PKT_SNR_VALUE) * 0.25
                     
         print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
+        write_register(REG_FIFO_RX_BASE_ADDR, 0x00)
+        write_register(REG_FIFO_ADDR_PTR, 0x00)
         write_register(REG_OP_MODE, 0x85)
         return data
+    time.sleep(0.1)
     return None
 
 if __name__ == "__main__":
     try:
-        # Configuración inicial (FUERA del bucle)
+        # Configuración inicial
         GPIO.setup(DIO0_PIN, GPIO.IN)
+        
         if not init_lora():
             raise RuntimeError("Fallo al inicializar LoRa")
 
-        print("Recepción activa en 433 MHz. Ctrl+C para salir...")
+        print("Esperando datos en 433 MHz (Ctrl+C para salir)...")
         
-        while True:
-            try:
-                data = receive_data()  # Función que debería limpiar flags automáticamente
-                if data:
-                    rssi = read_register(REG_PKT_RSSI_VALUE) - 164
-                    print(f"Paquete: {data} | RSSI: {rssi} dBm")
-                
-                # Pequeña pausa para evitar sobrecarga de CPU
-                time.sleep(0.01)
-                
-            except Exception as e:  # Captura cualquier error de recepción
-                print(f"Error en recepción: {str(e)}")
-                if not init_lora():  # Reintenta inicialización
-                    print("Error crítico: No se puede recuperar la conexión")
-                    break
-                    
+        data = receive_data()  # Recibe datos RAW sin conversión
+        if data:
+            print(f"Paquete recibido: {data} | RSSI: {read_register(REG_PKT_RSSI_VALUE)-164} dBm")
+        time.sleep(0.05)
+            
     except KeyboardInterrupt:
-        print("\nRecepción detenida por el usuario")
+        print("\nInterrupción por usuario")
     finally:
-        # Liberación garantizada de recursos
+        # Liberación segura de recursos
         spi.close()
         GPIO.cleanup()
-        print("Recursos liberados correctamente")
+        print("SPI y GPIO liberados correctamente")
