@@ -82,7 +82,6 @@ def lora_recibido():
 def receive_data():
     # Limpiar flags previos y verificar recepción
     irq_flags = read_register(REG_IRQ_FLAGS)
-    write_register(REG_IRQ_FLAGS, 0xFF)  # Limpieza completa
     
     if not (irq_flags & IRQ_RX_DONE_MASK):
         return None
@@ -105,6 +104,7 @@ def receive_data():
     # Preparar para siguiente recepción
     write_register(REG_FIFO_ADDR_PTR, 0x00)
     write_register(REG_OP_MODE, 0x85)  # Crucial: volver a RX continuo
+    write_register(REG_IRQ_FLAGS, 0xFF)  # Limpieza completa
     time.sleep(0.01)
     
     print(f"Paquete: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
