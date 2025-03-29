@@ -77,7 +77,6 @@ def receive_data():
     # Verificar si hay datos recibidos
     irq_flags = read_register(REG_IRQ_FLAGS)
     # Limpiar flags
-    write_register(REG_IRQ_FLAGS, irq_flags)
     
     # Obtener longitud del paquete
     length = read_register(REG_RX_NB_BYTES)
@@ -97,6 +96,7 @@ def receive_data():
     snr = read_register(REG_PKT_SNR_VALUE) * 0.25
         
     print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
+    write_register(REG_IRQ_FLAGS, irq_flags)
     return data
     
 
