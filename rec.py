@@ -76,7 +76,7 @@ def init_lora():
 def receive_data():
     irq_flags = read_register(REG_IRQ_FLAGS)
     # Verificar si hay datos recibidos
-    write_register(REG_IRQ_FLAGS, irq_flags)
+    
     if ((irq_flags & IRQ_RX_DONE_MASK) == 0):
         return 0
     if (irq_flags & 0x20):
@@ -98,6 +98,7 @@ def receive_data():
     rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste para 433MHz
     snr = read_register(REG_PKT_SNR_VALUE) * 0.25
     irq_flags = int(read_register(REG_IRQ_FLAGS))
+    write_register(REG_IRQ_FLAGS, irq_flags)
     
     print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
     return data
@@ -115,7 +116,7 @@ if __name__ == "__main__":
         
         if init_lora():
             while True:
-                print("Esperando datos...")
+                print("Esperando datos...", end='\r')
                 write_register(REG_OP_MODE, 0x85)
                 if lora_recibido():
                     print("Paquete válido recibido!")
