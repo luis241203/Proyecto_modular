@@ -79,8 +79,8 @@ def init_lora():
 def receive_data():
     # Verificar si hay datos recibidos
     irq_flags = read_register(REG_IRQ_FLAGS)
-    write_register(REG_IRQ_FLAGS, irq_flags)
     if irq_flags & 0x40:  # RxDone
+        write_register(REG_IRQ_FLAGS, irq_flags)
         # Obtener longitud del paquete
         length = read_register(REG_RX_NB_BYTES)
         
