@@ -70,7 +70,7 @@ def init_lora():
     write_register(0x0C, 0x23)  # REG_LNA: LNA máxima ganancia
     
     # Modo RX continuo
-    write_register(REG_OP_MODE, 0x85)
+    #write_register(REG_OP_MODE, 0x85)
     time.sleep(0.1)
     
     print("LoRa listo para recibir en 433 MHz")
@@ -78,33 +78,35 @@ def init_lora():
 
 def receive_data():
     # Verificar si hay datos recibidos
-    irq_flags = read_register(REG_IRQ_FLAGS)
-    
-    if irq_flags & 0x40:  # RxDone
-        # Obtener longitud del paquete
-        length = read_register(REG_RX_NB_BYTES)
-        
-        # Leer datos del FIFO
-        current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
-        write_register(REG_FIFO_ADDR_PTR, current_addr)
-        
-        data = []
-        for _ in range(length):
-            data.append(read_register(REG_FIFO))
-        
-        # Leer RSSI (ajuste para 433 MHz)
-        rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste específico para 433 MHz
-        snr = read_register(REG_PKT_SNR_VALUE) * 0.25
-        
-        # Limpiar flags
-        write_register(REG_IRQ_FLAGS, 0xFF)
-        write_register(REG_FIFO_ADDR_PTR, 0x00)
+    while True:
         write_register(REG_OP_MODE, 0x85)
-        
-        print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
-        return data
+        time.sleep(0.1)
+        irq_flags = read_register(REG_IRQ_FLAGS)
+        if irq_flags & 0x40:  # RxDone
+            # Obtener longitud del paquete
+            length = read_register(REG_RX_NB_BYTES)
+            
+            # Leer datos del FIFO
+            current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
+            write_register(REG_FIFO_ADDR_PTR, current_addr)
+            
+            data = []
+            for _ in range(length):
+                data.append(read_register(REG_FIFO))
+            
+            # Leer RSSI (ajuste para 433 MHz)
+            rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste específico para 433 MHz
+            snr = read_register(REG_PKT_SNR_VALUE) * 0.25
+            
+            # Limpiar flags
+            write_register(REG_IRQ_FLAGS, 0xFF)
+            write_register(REG_FIFO_ADDR_PTR, 0x00)
+            write_register(REG_OP_MODE, 0x85)
+            
+            print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
+            return data
     
-    return None
+        return None
 
 if __name__ == "__main__":
     try:
@@ -114,34 +116,17 @@ if __name__ == "__main__":
         if not init_lora():
             raise RuntimeError("Fallo al inicializar LoRa")
 
-        print("Recepción activa en 433 MHz. Presiona Ctrl+C para salir...")
+        print("Esperando datos en 433 MHz (Ctrl+C para salir)...")
         
-        # Bucle principal de recepción
-        while True:
-            try:
-                data = receive_data()  # Intenta recibir datos
-                if data:
-                    rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste para 433MHz
-                    print(f"Paquete recibido: {data} | RSSI: {rssi} dBm")
-                
-                time.sleep(0.01)  # Pequeña pausa para evitar sobrecarga
-                
-            except KeyboardInterrupt:
-                raise  # Re-lanza la interrupción para manejo externo
-                
-            except Exception as e:
-                print(f"Error en recepción: {str(e)}")
-                print("Reintentando en 1 segundo...")
-                time.sleep(1)
-                if not init_lora():  # Reintenta inicialización
-                    print("Error crítico: No se puede recuperar la conexión")
-                    break
-                    
+        data = receive_data()  # Recibe datos RAW sin conversión
+        #if data:
+        #    print(f"Paquete recibido: {data} | RSSI: {read_register(REG_PKT_RSSI_VALUE)-164} dBm")
+        #time.sleep(0.05)
+            
     except KeyboardInterrupt:
-        print("\nRecepción detenida por el usuario")
-        
+        print("\nInterrupción por usuario")
     finally:
-        # Liberación garantizada de recursos
+        # Liberación segura de recursos
         spi.close()
         GPIO.cleanup()
-        print("Recursos liberados correctamente")
+        print("SPI y GPIO liberados correctamente")
