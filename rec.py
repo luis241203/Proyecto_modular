@@ -29,6 +29,7 @@ REG_PKT_RSSI_VALUE = 0x1A
 # Registros SX1278 (completos para RX)
 REG_FIFO_ADDR_PTR = 0x0D
 REG_FIFO_RX_BASE_ADDR = 0x0F  # <-- ¡Este faltaba!
+IRQ_RX_DONE_MASK = 0x40
 
 def read_register(register):
     return spi.xfer2([register & 0x7F, 0x00])[1]
@@ -66,7 +67,7 @@ def init_lora():
     write_register(REG_FIFO_ADDR_PTR, 0x00)       # Resetear puntero
     
     # Modo RX continuo
-    write_register(REG_OP_MODE, 0x85)
+    # CAMBIO RECIENTE write_register(REG_OP_MODE, 0x85)
     time.sleep(0.1)
     
     print("LoRa listo para recibir")
@@ -79,10 +80,12 @@ def receive_data():
     if irq_flags & 0x40:  # RxDone
         # Obtener longitud del paquete
         length = read_register(REG_RX_NB_BYTES)
+
+        write_register(REG_OP_MODE, 0x81)
         
         # Leer datos del FIFO
         current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
-        write_register(0x0D, current_addr)  # FIFO_ADDR_PTR
+        write_register(REG_FIFO_ADDR_PTR, current_addr)  # FIFO_ADDR_PTR
         
         data = []
         for _ in range(length):
@@ -100,6 +103,12 @@ def receive_data():
     
     return None
 
+def lora_recibido():
+    if (read_register(REG_IRQ_FLAGS) == IRQ_RX_DONE_MASK):
+        return True
+    else:
+        return False
+
 if __name__ == "__main__":
     try:
         # Configurar DIO0 como entrada (para interrupción)
@@ -108,8 +117,9 @@ if __name__ == "__main__":
         if init_lora():
             print("Esperando datos...")
             while True:
+                write_register(REG_OP_MODE, 0x85)
                 data = receive_data()
-                if data:
+                if lora_recibido():
                     print("Paquete válido recibido!")
                 time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga
                 
