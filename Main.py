@@ -112,7 +112,7 @@ if __name__ == "__main__":
             counter = 0
             while True:
                 # Enviar datos de prueba (puedes modificar esto)
-                payload = [72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33, 33]
+                payload = [72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33, 33, counter%250]
                 send_data(payload)
                 
                 counter += 1
