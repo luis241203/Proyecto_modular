@@ -102,7 +102,7 @@ def receive_data():
             
             # Limpiar flags
             #write_register(REG_IRQ_FLAGS, 0xFF)
-            #write_register(REG_FIFO_ADDR_PTR, 0x00)
+            write_register(REG_FIFO_ADDR_PTR, 0x00)
             #return data
         time.sleep(0.1)
         #return None
