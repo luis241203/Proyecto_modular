@@ -97,6 +97,8 @@ def receive_data():
         
         # Limpiar flags
         write_register(REG_IRQ_FLAGS, 0x15)
+        write_register(REG_FIFO_RX_BASE_ADDR, 0x00)  # Dirección base RX
+        write_register(REG_FIFO_ADDR_PTR, 0x00)       # Resetear puntero
         
         print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
         return data
