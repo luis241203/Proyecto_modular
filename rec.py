@@ -67,11 +67,42 @@ def init_lora():
     write_register(REG_FIFO_ADDR_PTR, 0x00)       # Resetear puntero
     
     # Modo RX continuo
-    write_register(REG_OP_MODE, 0x85)
+    # CAMBIO RECIENTE write_register(REG_OP_MODE, 0x85)
     time.sleep(0.1)
     
     print("LoRa listo para recibir")
     return True
+
+def receive_data():
+    # Verificar si hay datos recibidos
+    irq_flags = read_register(REG_IRQ_FLAGS)
+    
+    if irq_flags & 0x40:  # RxDone
+        # Obtener longitud del paquete
+        length = read_register(REG_RX_NB_BYTES)
+
+        write_register(REG_OP_MODE, 0x81)
+        
+        # Leer datos del FIFO
+        current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
+        write_register(REG_FIFO_ADDR_PTR, current_addr)  # FIFO_ADDR_PTR
+        
+        data = []
+        for _ in range(length):
+            data.append(read_register(REG_FIFO))
+        
+        # Leer RSSI y SNR
+        rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste para 433MHz
+        snr = read_register(REG_PKT_SNR_VALUE) * 0.25
+        
+        # Limpiar flags
+        write_register(REG_IRQ_FLAGS, irq_flags)
+        
+        print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
+        return data
+    else:
+        print("no hay paquetes")
+        return None
 
 def lora_recibido():
     if (read_register(REG_IRQ_FLAGS) & IRQ_RX_DONE_MASK):
@@ -79,49 +110,25 @@ def lora_recibido():
     else:
         return False
 
-def receive_continuous():
+if __name__ == "__main__":
     try:
-        # Configuración inicial
+        # Configurar DIO0 como entrada (para interrupción)
         GPIO.setup(DIO0_PIN, GPIO.IN)
-        if not init_lora():
-            raise RuntimeError("Fallo al inicializar LoRa")
-
-        print("Recepción activa en 433MHz. Ctrl+C para salir...")
-
-        while True:
-            # Verificar recepción sin bloquear
-            if GPIO.input(DIO0_PIN) or (read_register(REG_IRQ_FLAGS) & IRQ_RX_DONE_MASK):
-                # Limpiar todos los flags de interrupción
-                write_register(REG_IRQ_FLAGS, 0xFF)
+        
+        if init_lora():
+            print("Esperando datos...")
+            while True:
+                write_register(REG_OP_MODE, 0x85)
+                if lora_recibido():
+                    print("Paquete válido recibido!")
+                    data = receive_data()
+                else:
+                    print("el registro no indica mensaje", end='\r')
+                time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga
                 
-                # Cambiar a modo standby para leer FIFO
-                write_register(REG_OP_MODE, 0x81)
-                time.sleep(0.01)  # Pequeña espera
-
-                # Leer datos
-                length = read_register(REG_RX_NB_BYTES)
-                current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
-                write_register(REG_FIFO_ADDR_PTR, current_addr)
-                
-                data = [read_register(REG_FIFO) for _ in range(length)]
-                rssi = read_register(REG_PKT_RSSI_VALUE) - 164
-                snr = read_register(REG_PKT_SNR_VALUE) * 0.25
-
-                print(f"Paquete: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
-
-                # Preparar para siguiente recepción
-                write_register(REG_FIFO_ADDR_PTR, 0x00)
-                write_register(REG_OP_MODE, 0x85)  # Vuelta a RX continuo
-                time.sleep(0.01)
-            else:
-                time.sleep(0.01)  # Pequeña pausa para reducir CPU usage
-
     except KeyboardInterrupt:
-        print("\nRecepción detenida por usuario")
+        print("Recepción detenida")
     finally:
         spi.close()
         GPIO.cleanup()
-        print("Recursos liberados correctamente")
 
-if __name__ == "__main__":
-    receive_continuous()
