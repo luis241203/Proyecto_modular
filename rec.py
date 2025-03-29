@@ -122,6 +122,7 @@ if __name__ == "__main__":
                 if lora_recibido():
                     print("Paquete válido recibido!")
                     data = receive_data()
+                    write_register(REG_IRQ_FLAGS, 0xFF)
                 else:
                     print("el registro no indica mensaje")
                 time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga
