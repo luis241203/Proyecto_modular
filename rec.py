@@ -84,7 +84,7 @@ def receive_data():
         # Obtener longitud del paquete
         length = read_register(REG_RX_NB_BYTES)
         
-        write_register(REG_OP_MODE, 0x81)
+        #write_register(REG_OP_MODE, 0x81)
         # Leer datos del FIFO
         current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
         write_register(REG_FIFO_ADDR_PTR, current_addr)
