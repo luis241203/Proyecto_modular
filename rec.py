@@ -67,7 +67,7 @@ def init_lora():
     write_register(REG_FIFO_ADDR_PTR, 0x00)       # Resetear puntero
     
     # Modo RX continuo
-    # CAMBIO RECIENTE write_register(REG_OP_MODE, 0x85)
+    write_register(REG_OP_MODE, 0x85)
     time.sleep(0.1)
     
     print("LoRa listo para recibir")
@@ -80,56 +80,57 @@ def lora_recibido():
         return False
 
 def receive_data():
+    # Limpiar flags previos y verificar recepción
     irq_flags = read_register(REG_IRQ_FLAGS)
+    write_register(REG_IRQ_FLAGS, 0xFF)  # Limpieza completa
     
-    if irq_flags & IRQ_RX_DONE_MASK:
-        # 1. Limpiar TODOS los flags de interrupción primero
-        write_register(REG_IRQ_FLAGS, 0xFF)
-        
-        # 2. Cambiar a modo standby para leer FIFO
-        write_register(REG_OP_MODE, 0x81)
-        time.sleep(0.01)
-        
-        # 3. Obtener y leer datos
-        length = read_register(REG_RX_NB_BYTES)
-        current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
-        write_register(REG_FIFO_ADDR_PTR, current_addr)
-        
-        data = [read_register(REG_FIFO) for _ in range(length)]
-        
-        # 4. Calcular métricas
-        rssi = read_register(REG_PKT_RSSI_VALUE) - 164
-        snr = read_register(REG_PKT_SNR_VALUE) * 0.25
-        
-        # 5. Preparar para siguiente recepción
-        write_register(REG_FIFO_ADDR_PTR, 0x00)  # Resetear puntero FIFO
-        write_register(REG_OP_MODE, 0x85)  # Vuelve a RX continuo
-        time.sleep(0.01)
-        
-        print(f"Datos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
-        return data
+    if not (irq_flags & IRQ_RX_DONE_MASK):
+        return None
     
-    return None
+    # Cambiar a modo standby para operación segura
+    write_register(REG_OP_MODE, 0x81)
+    time.sleep(0.01)  # Pequeña espera para estabilizar
+    
+    # Obtener datos
+    length = read_register(REG_RX_NB_BYTES)
+    current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
+    write_register(REG_FIFO_ADDR_PTR, current_addr)
+    
+    data = [read_register(REG_FIFO) for _ in range(length)]
+    
+    # Métricas RF
+    rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste 433MHz
+    snr = read_register(REG_PKT_SNR_VALUE) * 0.25
+    
+    # Preparar para siguiente recepción
+    write_register(REG_FIFO_ADDR_PTR, 0x00)
+    write_register(REG_OP_MODE, 0x85)  # Crucial: volver a RX continuo
+    time.sleep(0.01)
+    
+    print(f"Paquete: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
+    return data
 
 if __name__ == "__main__":
     try:
         GPIO.setup(DIO0_PIN, GPIO.IN)
         
-        if init_lora():
-            print("Recepción activa en 433 MHz. Ctrl+C para salir...")
-            
-            while True:
-                if lora_recibido():
-                    data = receive_data()
-                    if data:
-                        print("Paquete procesado correctamente")
-                else:
-                    print("Esperando datos...", end='\r')  # Usamos \r para sobreescribir
-                
-                time.sleep(0.05)
+        if not init_lora():
+            raise RuntimeError("Error al inicializar LoRa")
+        
+        print("Receptor activo en 433 MHz. Ctrl+C para salir...")
+        
+        # Bucle principal optimizado
+        while True:
+            data = receive_data()
+            if not data:
+                # Verificación directa del registro por si falla DIO0
+                if (read_register(REG_IRQ_FLAGS) & IRQ_RX_DONE_MASK):
+                    continue
+                time.sleep(0.05)  # Pausa mínima para reducir CPU usage
                 
     except KeyboardInterrupt:
         print("\nRecepción detenida")
     finally:
         spi.close()
         GPIO.cleanup()
+        print("Recursos liberados")
