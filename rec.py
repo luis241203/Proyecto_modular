@@ -115,16 +115,14 @@ if __name__ == "__main__":
         GPIO.setup(DIO0_PIN, GPIO.IN)
         
         if init_lora():
+            print("Esperando datos...", end='\r')
             while True:
-                print("Esperando datos...", end='\r')
+
                 write_register(REG_OP_MODE, 0x85)
-                if lora_recibido():
-                    print("Paquete válido recibido!")
-                    data = receive_data()
-                    #write_register(REG_IRQ_FLAGS, 0xFF)
-                else:
-                    print("el registro no indica mensaje", end='\r')
-                time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga
+                print("Paquete válido recibido!")
+                data = receive_data()
+                #write_register(REG_IRQ_FLAGS, 0xFF)
+                time.sleep(0.5)  # Pequeña pausa para evitar sobrecarga
                 
     except KeyboardInterrupt:
         print("Recepción detenida")
