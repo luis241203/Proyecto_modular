@@ -104,9 +104,9 @@ def receive_data():
             write_register(REG_OP_MODE, 0x85)
             
             print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
-            return data
+            #return data
     
-        return None
+        #return None
 
 if __name__ == "__main__":
     try:
@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
         print("Esperando datos en 433 MHz (Ctrl+C para salir)...")
         
-        data = receive_data()  # Recibe datos RAW sin conversión
+        receive_data()  # Recibe datos RAW sin conversión
         #if data:
         #    print(f"Paquete recibido: {data} | RSSI: {read_register(REG_PKT_RSSI_VALUE)-164} dBm")
         #time.sleep(0.05)
