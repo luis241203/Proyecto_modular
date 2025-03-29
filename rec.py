@@ -96,7 +96,7 @@ def receive_data():
         snr = read_register(REG_PKT_SNR_VALUE) * 0.25
         
         # Limpiar flags
-        write_register(REG_IRQ_FLAGS, irq_flags)
+        write_register(REG_IRQ_FLAGS, 0x15)
         
         print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
         return data
@@ -122,7 +122,6 @@ if __name__ == "__main__":
                 if lora_recibido():
                     print("Paquete válido recibido!")
                     data = receive_data()
-                    write_register(REG_IRQ_FLAGS, 0xFF)
                 else:
                     print("el registro no indica mensaje")
                 time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga
