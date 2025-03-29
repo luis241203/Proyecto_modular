@@ -100,7 +100,7 @@ def receive_data():
         print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
         #write_register(REG_FIFO_RX_BASE_ADDR, 0x00)
         #write_register(REG_FIFO_ADDR_PTR, 0x00)
-        write_register(REG_OP_MODE, 0x85)
+        #write_register(REG_OP_MODE, 0x85)
         return data
     time.sleep(0.1)
     return None
@@ -117,6 +117,8 @@ if __name__ == "__main__":
         data = receive_data()  # Recibe datos RAW sin conversión
         if data:
             print(f"Paquete recibido: {data} | RSSI: {read_register(REG_PKT_RSSI_VALUE)-164} dBm")
+        else:
+            print("no hay datos")
         time.sleep(0.05)
             
     except KeyboardInterrupt:
