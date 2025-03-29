@@ -114,7 +114,8 @@ if __name__ == "__main__":
             raise RuntimeError("Fallo al inicializar LoRa")
 
         print("Esperando datos en 433 MHz (Ctrl+C para salir)...")
-        
+        write_register(REG_OP_MODE, 0x85)
+        time.sleep(0.01)
         data = receive_data()  # Recibe datos RAW sin conversión
         if data:
             print(f"Paquete recibido: {data} | RSSI: {read_register(REG_PKT_RSSI_VALUE)-164} dBm")
