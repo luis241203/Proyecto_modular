@@ -76,35 +76,32 @@ def init_lora():
 def receive_data():
     # Verificar si hay datos recibidos
     irq_flags = read_register(REG_IRQ_FLAGS)
+    # Limpiar flags
+    write_register(REG_IRQ_FLAGS, irq_flags)
     
-    if irq_flags & 0x40:  # RxDone
-        # Obtener longitud del paquete
-        length = read_register(REG_RX_NB_BYTES)
+    # Obtener longitud del paquete
+    length = read_register(REG_RX_NB_BYTES)
 
-        write_register(REG_OP_MODE, 0x81)
-        
-        # Leer datos del FIFO
-        current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
-        write_register(REG_FIFO_ADDR_PTR, current_addr)  # FIFO_ADDR_PTR
-        
-        data = []
-        for _ in range(length):
-            data.append(read_register(REG_FIFO))
-        
-        # Leer RSSI y SNR
-        rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste para 433MHz
-        snr = read_register(REG_PKT_SNR_VALUE) * 0.25
-        
-        # Limpiar flags
-        write_register(REG_IRQ_FLAGS, 0xFF)
-        
-        print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
-        return data
+    write_register(REG_OP_MODE, 0x81)
     
-    return None
+    # Leer datos del FIFO
+    current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
+    write_register(REG_FIFO_ADDR_PTR, current_addr)  # FIFO_ADDR_PTR
+    
+    data = []
+    for _ in range(length):
+        data.append(read_register(REG_FIFO))
+    
+    # Leer RSSI y SNR
+    rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste para 433MHz
+    snr = read_register(REG_PKT_SNR_VALUE) * 0.25
+        
+    print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
+    return data
+    
 
 def lora_recibido():
-    if (read_register(REG_IRQ_FLAGS) == IRQ_RX_DONE_MASK):
+    if (read_register(REG_IRQ_FLAGS) & IRQ_RX_DONE_MASK):
         return True
     else:
         return False
