@@ -78,8 +78,7 @@ def receive_data():
     irq_flags = read_register(REG_IRQ_FLAGS)
     
     if irq_flags & 0x40:  # RxDone
-        # Limpiar flags
-        write_register(REG_IRQ_FLAGS, irq_flags)
+        
         # Obtener longitud del paquete
         length = read_register(REG_RX_NB_BYTES)
 
@@ -97,7 +96,8 @@ def receive_data():
         rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste para 433MHz
         snr = read_register(REG_PKT_SNR_VALUE) * 0.25
         
-        
+        # Limpiar flags
+        write_register(REG_IRQ_FLAGS, irq_flags)
         
         print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
         return data
