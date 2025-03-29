@@ -75,7 +75,6 @@ def init_lora():
 
 def receive_data():
     # Verificar si hay datos recibidos
-    irq_flags = int(read_register(REG_IRQ_FLAGS))
     write_register(REG_IRQ_FLAGS, irq_flags)
     if ((irq_flags & IRQ_RX_DONE_MASK) == 0):
         return 0
@@ -97,7 +96,7 @@ def receive_data():
     # Leer RSSI y SNR
     rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste para 433MHz
     snr = read_register(REG_PKT_SNR_VALUE) * 0.25
-    
+    irq_flags = int(read_register(REG_IRQ_FLAGS))
     
     print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
     return data
@@ -114,8 +113,8 @@ if __name__ == "__main__":
         GPIO.setup(DIO0_PIN, GPIO.IN)
         
         if init_lora():
-            print("Esperando datos...")
             while True:
+                print("Esperando datos...")
                 write_register(REG_OP_MODE, 0x85)
                 if lora_recibido():
                     print("Paquete válido recibido!")
