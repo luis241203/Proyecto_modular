@@ -78,9 +78,10 @@ def init_lora():
 
 def receive_data():
     # Verificar si hay datos recibidos
+    data = []
+    print("entrando en bucle de recepcion")
     while True:
         write_register(REG_OP_MODE, 0x85)
-        time.sleep(0.1)
         irq_flags = read_register(REG_IRQ_FLAGS)
         if irq_flags & 0x40:  # RxDone
             # Obtener longitud del paquete
@@ -89,23 +90,21 @@ def receive_data():
             # Leer datos del FIFO
             current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
             write_register(REG_FIFO_ADDR_PTR, current_addr)
-            
-            data = []
+
             for _ in range(length):
                 data.append(read_register(REG_FIFO))
             
             # Leer RSSI (ajuste para 433 MHz)
             rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste específico para 433 MHz
             snr = read_register(REG_PKT_SNR_VALUE) * 0.25
+                        
+            print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
             
             # Limpiar flags
             write_register(REG_IRQ_FLAGS, 0xFF)
             write_register(REG_FIFO_ADDR_PTR, 0x00)
-            write_register(REG_OP_MODE, 0x85)
-            
-            print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
             #return data
-    
+        time.sleep(0.1)
         #return None
 
 if __name__ == "__main__":
