@@ -74,6 +74,7 @@ def init_lora():
     return True
 
 def receive_data():
+    irq_flags = read_register(REG_IRQ_FLAGS)
     # Verificar si hay datos recibidos
     write_register(REG_IRQ_FLAGS, irq_flags)
     if ((irq_flags & IRQ_RX_DONE_MASK) == 0):
