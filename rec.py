@@ -83,10 +83,12 @@ def receive_data():
     while True:
         write_register(REG_OP_MODE, 0x85)
         irq_flags = read_register(REG_IRQ_FLAGS)
+        write_register(REG_IRQ_FLAGS, irq_flags)
         if irq_flags & 0x40:  # RxDone
             # Obtener longitud del paquete
             length = read_register(REG_RX_NB_BYTES)
             
+            write_register(REG_OP_MODE, 0x81)
             # Leer datos del FIFO
             current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
             write_register(REG_FIFO_ADDR_PTR, current_addr)
@@ -99,10 +101,7 @@ def receive_data():
             snr = read_register(REG_PKT_SNR_VALUE) * 0.25
                         
             print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
-            
-            # Limpiar flags
-            write_register(REG_IRQ_FLAGS, 0xFF)
-            #write_register(REG_FIFO_ADDR_PTR, 0x00)
+            write_register(REG_OP_MODE, 0x85)
             #return data
         time.sleep(0.1)
         #return None
