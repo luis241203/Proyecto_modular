@@ -115,9 +115,9 @@ if __name__ == "__main__":
             print("Esperando datos...")
             while True:
                 write_register(REG_OP_MODE, 0x85)
-                data = receive_data()
                 if lora_recibido():
                     print("Paquete válido recibido!")
+                    data = receive_data()
                 time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga
                 
     except KeyboardInterrupt:
