@@ -70,14 +70,13 @@ def init_lora():
     write_register(0x0C, 0x23)  # REG_LNA: LNA máxima ganancia
     
     # Modo RX continuo
-    #write_register(REG_OP_MODE, 0x85)
+    write_register(REG_OP_MODE, 0x85)
     time.sleep(0.1)
     
     print("LoRa listo para recibir en 433 MHz")
     return True
 
 def receive_data():
-    write_register(REG_OP_MODE, 0x85)
     # Verificar si hay datos recibidos
     irq_flags = read_register(REG_IRQ_FLAGS)
     write_register(REG_IRQ_FLAGS, irq_flags)
@@ -115,7 +114,6 @@ if __name__ == "__main__":
             raise RuntimeError("Fallo al inicializar LoRa")
 
         print("Esperando datos en 433 MHz (Ctrl+C para salir)...")
-        time.sleep(0.01)
         data = receive_data()  # Recibe datos RAW sin conversión
         if data:
             print(f"Paquete recibido: {data} | RSSI: {read_register(REG_PKT_RSSI_VALUE)-164} dBm")
