@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
+import selector as select
 
-
-def crear_label(root, texto, nombre, labels_dict, border, color, letra_color, size_letra):
+def crear_label(ventana_ajustes, texto, nombre, labels_dict, border, color, letra_color, size_letra):
     # Crear un nuevo Label y agregarlo al diccionario
-    label = tk.Label(root, text=texto, font=("Arial", size_letra, "bold"), bd=border, relief="solid", bg = color, fg = letra_color)
+    label = tk.Label(ventana_ajustes, text=texto, font=("Arial", size_letra, "bold"), bd=border, relief="solid", bg = color, fg = letra_color)
     label.pack(padx=10, pady=7, fill="x")
     labels_dict[nombre] = label  # Guardar la referencia en el diccionario
 
@@ -12,22 +12,27 @@ def actualizar_label(labels_dict, nombre, nuevo_texto):
     # Actualizar el texto de un Label existente
     if nombre in labels_dict:
         labels_dict[nombre].config(text=nuevo_texto)
+def regresar_ajustes():
+    ventana_ajustes.destroy()
+    select.create_select()
+
 def crear_ventana_ajustes():
-    root = tk.Tk()
-    root.geometry("1024x600")
-    root.config(bg="AntiqueWhite")
-    root.attributes('-fullscreen', True)
-    root.bind('<Escape>', lambda e: root.attributes('-fullscreen', False))
+    global ventana_ajustes
+    ventana_ajustes = tk.Tk()
+    ventana_ajustes.geometry("1024x600")
+    ventana_ajustes.config(bg="AntiqueWhite")
+    ventana_ajustes.attributes('-fullscreen', True)
+    ventana_ajustes.bind('<Escape>', lambda e: ventana_ajustes.attributes('-fullscreen', False))
 
     # Diccionario para almacenar los labels
     labels = {}
     # LABEL DE BIENVENIDA
-    crear_label(root, "ACUAPONIC SETTINGS", "label_Welcome", labels, 0, "#F0E68C", "black", 25)
+    crear_label(ventana_ajustes, "ACUAPONIC SETTINGS", "label_Welcome", labels, 0, "#F0E68C", "black", 25)
 
 ##################APARTADO DE TEMPERATURA DEL AGUA#######################
 
     #Creacion de contenedores
-    temp_agua_conteiner = tk.Frame(root,bg="AntiqueWhite")
+    temp_agua_conteiner = tk.Frame(ventana_ajustes,bg="AntiqueWhite")
     temp_agua_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TEMPERATURA AGUA
@@ -49,7 +54,7 @@ def crear_ventana_ajustes():
 ##################APARTADO DE TEMPERATURA DEL AMBIENTE#######################
 
     #Creacion de contenedores
-    temp_amb_conteiner = tk.Frame(root,bg="AntiqueWhite")
+    temp_amb_conteiner = tk.Frame(ventana_ajustes,bg="AntiqueWhite")
     temp_amb_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TEMPERATURA AMBIENTE
@@ -73,7 +78,7 @@ def crear_ventana_ajustes():
 ##################APARTADO DE TURBIDEZ#######################
 
     #Creacion de contenedores
-    turb_conteiner = tk.Frame(root,bg="AntiqueWhite")
+    turb_conteiner = tk.Frame(ventana_ajustes,bg="AntiqueWhite")
     turb_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TURBIDEZ
@@ -95,7 +100,7 @@ def crear_ventana_ajustes():
 ##################APARTADO DE LUMINOSIDAD#######################
 
     #Creacion de contenedores
-    lum_conteiner = tk.Frame(root,bg="AntiqueWhite")
+    lum_conteiner = tk.Frame(ventana_ajustes,bg="AntiqueWhite")
     lum_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL LUMINOSIDAD
@@ -117,7 +122,7 @@ def crear_ventana_ajustes():
 ##################APARTADO DE HUMEDAD#######################
 
     #Creacion de contenedores
-    hum_conteiner = tk.Frame(root,bg="AntiqueWhite")
+    hum_conteiner = tk.Frame(ventana_ajustes,bg="AntiqueWhite")
     hum_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL HUMEDAD
@@ -140,7 +145,7 @@ def crear_ventana_ajustes():
 ##################APARTADO DE CAUDAL################################
 
     #Creacion de contenedores
-    caudal_conteiner = tk.Frame(root,bg="AntiqueWhite")
+    caudal_conteiner = tk.Frame(ventana_ajustes,bg="AntiqueWhite")
     caudal_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL CAUDAL
@@ -153,11 +158,14 @@ def crear_ventana_ajustes():
     textbox_caudal_min.pack(side="left",padx=10, pady=7, fill="both")
     textbox_caudal_min.config(font=("Arial", 20, "bold"))  
 ####################################################################
-
+    #BOTON DE REGRESAR
+    boton_regresar_ajustes = tk.Button(ventana_ajustes, text="REGRESAR", font=("Arial", 25, "bold"), command=regresar_ajustes,bg="white")
+    boton_regresar_ajustes.pack(fill='x', padx=25, pady=25, side="top", expand=True)
 
     # Actualizar un label después de un tiempo
-    root.after(2000, actualizar_label, labels, "label1", "Texto actualizado para Label 1")
+    ventana_ajustes.after(2000, actualizar_label, labels, "label1", "Texto actualizado para Label 1")
 
-    root.mainloop()
+    ventana_ajustes.mainloop()
+
 
 #crear_ventana_ajustes()

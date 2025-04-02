@@ -3,13 +3,6 @@ from tkinter import ttk
 import main as main
 import ajustes as adj
 
-root = tk.Tk()
-root.geometry("1024x600")
-root.config(bg="#6A9BAE")
-root.title("ACUAPONIAC SYSTEM")
-root.attributes('-fullscreen', True)
-root.bind('<Escape>', lambda e: root.attributes('-fullscreen', False))
-
 
 def crear_label(root, texto, nombre, labels_dict, border, color, letra_color, size_letra):
     # Crear un nuevo Label y agregarlo al diccionario
@@ -24,6 +17,13 @@ def actualizar_label(labels_dict, nombre, nuevo_texto):
 
 
 def create_select():
+    global root
+    root = tk.Tk()
+    root.geometry("1024x600")
+    root.config(bg="#6A9BAE")
+    root.title("ACUAPONIAC SYSTEM")
+    root.attributes('-fullscreen', True)
+    root.bind('<Escape>', lambda e: root.attributes('-fullscreen', False))
     labels = {}
     image = tk.PhotoImage(file="sources\logo_ambiente.png")
     resized_img = image.subsample(10, 10)

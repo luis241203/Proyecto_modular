@@ -1,8 +1,8 @@
 import tkinter as tk
 
-def crear_label(root, texto, nombre, labels_dict, border, color, letra_color, size_letra):
+def crear_label(ventana_monitor, texto, nombre, labels_dict, border, color, letra_color, size_letra):
     # Crear un nuevo Label y agregarlo al diccionario
-    label = tk.Label(root, text=texto, font=("Arial", size_letra, "bold"), bd=border, relief="solid", bg = color, fg = letra_color)
+    label = tk.Label(ventana_monitor, text=texto, font=("Arial", size_letra, "bold"), bd=border, relief="solid", bg = color, fg = letra_color)
     label.pack(padx=10, pady=7, fill="x")
     labels_dict[nombre] = label  # Guardar la referencia en el diccionario
 
@@ -11,21 +11,21 @@ def actualizar_label(labels_dict, nombre, nuevo_texto):
     if nombre in labels_dict:
         labels_dict[nombre].config(text=nuevo_texto)
 def crear_ventana_monitor():
-    root = tk.Tk()
-    root.geometry("1024x600")
-    root.config(bg="AntiqueWhite")
-    root.attributes('-fullscreen', True)
-    root.bind('<Escape>', lambda e: root.attributes('-fullscreen', False))
+    ventana_monitor = tk.Tk()
+    ventana_monitor.geometry("1024x600")
+    ventana_monitor.config(bg="AntiqueWhite")
+    ventana_monitor.attributes('-fullscreen', True)
+    ventana_monitor.bind('<Escape>', lambda e: ventana_monitor.attributes('-fullscreen', False))
 
     # Diccionario para almacenar los labels
     labels = {}
     # LABEL DE BIENVENIDA
-    crear_label(root, "ACUAPONIC MONITOR", "label_Welcome", labels, 0, "#F0E68C", "black", 25)
+    crear_label(ventana_monitor, "ACUAPONIC MONITOR", "label_Welcome", labels, 0, "#F0E68C", "black", 25)
 
 ##################APARTADO DE TEMPERATURA DEL AGUA#######################
 
     #Creacion de contenedores
-    temp_agua_conteiner = tk.Frame(root,bg="Wheat")
+    temp_agua_conteiner = tk.Frame(ventana_monitor,bg="Wheat")
     temp_agua_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TEMPERATURA AGUA
@@ -40,7 +40,7 @@ def crear_ventana_monitor():
 ##################APARTADO DE TEMPERATURA DEL AMBIENTE#######################
 
     #Creacion de contenedores
-    temp_amb_conteiner = tk.Frame(root,bg="Wheat")
+    temp_amb_conteiner = tk.Frame(ventana_monitor,bg="Wheat")
     temp_amb_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TEMPERATURA AMBIENTE
@@ -55,7 +55,7 @@ def crear_ventana_monitor():
 ##################APARTADO DE TURBIDEZ#######################
 
     #Creacion de contenedores
-    turb_conteiner = tk.Frame(root,bg="Wheat")
+    turb_conteiner = tk.Frame(ventana_monitor,bg="Wheat")
     turb_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TURBIDEZ
@@ -70,7 +70,7 @@ def crear_ventana_monitor():
 ##################APARTADO DE LUMINOSIDAD#######################
 
     #Creacion de contenedores
-    lum_conteiner = tk.Frame(root,bg="Wheat")
+    lum_conteiner = tk.Frame(ventana_monitor,bg="Wheat")
     lum_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL LUMINOSIDAD
@@ -85,7 +85,7 @@ def crear_ventana_monitor():
 ##################APARTADO DE HUMEDAD#######################
 
     #Creacion de contenedores
-    hum_conteiner = tk.Frame(root,bg="Wheat")
+    hum_conteiner = tk.Frame(ventana_monitor,bg="Wheat")
     hum_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL HUMEDAD
@@ -101,7 +101,7 @@ def crear_ventana_monitor():
 ##################APARTADO DE CAUDAL################################
 
     #Creacion de contenedores
-    caudal_conteiner = tk.Frame(root,bg="Wheat")
+    caudal_conteiner = tk.Frame(ventana_monitor,bg="Wheat")
     caudal_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL PH
@@ -114,8 +114,8 @@ def crear_ventana_monitor():
 ####################################################################
 
     # Actualizar un label después de un tiempo
-    root.after(2000, actualizar_label, labels, "label1", "Texto actualizado para Label 1")
+    ventana_monitor.after(2000, actualizar_label, labels, "label1", "Texto actualizado para Label 1")
 
-    root.mainloop()
+    ventana_monitor.mainloop()
 
 #crear_ventana_monitor()
