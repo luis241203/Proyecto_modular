@@ -14,6 +14,8 @@ def crear_ventana_monitor():
     root = tk.Tk()
     root.geometry("1024x600")
     root.config(bg="AntiqueWhite")
+    root.attributes('-fullscreen', True)
+    root.bind('<Escape>', lambda e: root.attributes('-fullscreen', False))
 
     # Diccionario para almacenar los labels
     labels = {}
@@ -95,20 +97,6 @@ def crear_ventana_monitor():
     labels["label_hum_data"].config(anchor = "e")
 ################################################################
 
-##################APARTADO DE PH################################
-
-    #Creacion de contenedores
-    ph_conteiner = tk.Frame(root,bg="Wheat")
-    ph_conteiner.pack(padx=10,pady=10,fill="x")
-
-    # LABEL PH
-    crear_label(ph_conteiner, "PH DE AGUA :", "label_ph", labels, 0, "Wheat", "black", 20)
-    labels["label_ph"].pack(side="left", expand=True)
-    labels["label_ph"].config(anchor = "w")    
-    crear_label(ph_conteiner, "365", "label_ph_data", labels, 0, "Wheat", "green", 20)
-    labels["label_ph_data"].pack(side="right", expand=True, padx = 100)
-    labels["label_ph_data"].config(anchor = "e")    
-################################################################
 
 ##################APARTADO DE CAUDAL################################
 
