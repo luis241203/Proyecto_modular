@@ -6,7 +6,7 @@ La parte de la LDR esta preconfigurada a una intensidad definida para activar la
 la raspberry mediante comandos.
 
 
-#OTRAS RAMAS
+# _OTRAS RAMAS_
 
 ## python_raspberry
 En esta carpeta se encuentra el codigo fuente de la interfaz que sera instalada en la raspberry pi.
