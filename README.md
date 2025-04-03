@@ -1,32 +1,17 @@
-# _Sample project_
+# _CODIGO PARA LECTURA DE SENSORES USANDO LA ESP32-S3_
+Dentro de esta rama se encuentra todo el codigo, desde drivers hasta la asignacion de tareas para la lectura de los sensores.
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
-
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
-
+## NOTA
+La parte de la LDR esta preconfigurada a una intensidad definida para activar la salida (foco), sin embargo esto se va a cambiar, puesto que el control lo hará
+la raspberry mediante comandos.
 
 
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
+#OTRAS RAMAS
 
-## Example folder contents
+## python_raspberry
+En esta carpeta se encuentra el codigo fuente de la interfaz que sera instalada en la raspberry pi.
 
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
+## codigo_lora_raspberry
+En esta rama esta todo el codigo necesario para configurar el SX1278 con la raspberry, desde su prueba de estado hasta el driver de conexion.
 
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
 
-Below is short explanation of remaining files in the project folder.
-
-```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
-```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
