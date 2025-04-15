@@ -162,10 +162,15 @@ def crear_ventana_ajustes():
     boton_regresar_ajustes = tk.Button(ventana_ajustes, text="REGRESAR", font=("Arial", 25, "bold"), command=regresar_ajustes,bg="white")
     boton_regresar_ajustes.pack(fill='x', padx=25, pady=25, side="top", expand=True)
 
+    #BOTON DE ESCAPE
+    boton3 = tk.Button(ventana_ajustes, text="ESC", font=("Arial", 16, "bold"), command=escape,bg="white")
+    boton3.pack(fill='x', padx=25, pady=25, side="top", expand=True)
+
     # Actualizar un label después de un tiempo
     ventana_ajustes.after(2000, actualizar_label, labels, "label1", "Texto actualizado para Label 1")
 
     ventana_ajustes.mainloop()
 
-
+def escape():
+    ventana_ajustes.attributes('-fullscreen', False)
 #crear_ventana_ajustes()

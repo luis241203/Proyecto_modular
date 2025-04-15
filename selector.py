@@ -51,6 +51,10 @@ def create_select():
     boton2 = tk.Button(label_conteiner, text="AJUSTES", font=("Arial", 16, "bold"), command=create_adjusting,bg="white")
     boton2.pack(fill='x', padx=25, pady=25, side="top", expand=True)
 
+    #BOTON DE ESCAPE
+    boton3 = tk.Button(label_conteiner, text="ESC", font=("Arial", 16, "bold"), command=escape,bg="white")
+    boton3.pack(fill='x', padx=25, pady=25, side="top", expand=True)
+
 
     root.mainloop()
 
@@ -62,4 +66,8 @@ def create_adjusting():
     root.destroy()
     adj.crear_ventana_ajustes()
 
-create_select()
+def escape():
+    root.attributes('-fullscreen', False)
+
+if __name__ == "__main__":
+    create_select()

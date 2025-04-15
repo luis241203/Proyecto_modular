@@ -1,4 +1,9 @@
 import tkinter as tk
+import selector as select
+
+def regresar_ajustes():
+    ventana_monitor.destroy()
+    select.create_select()
 
 def crear_label(ventana_monitor, texto, nombre, labels_dict, border, color, letra_color, size_letra):
     # Crear un nuevo Label y agregarlo al diccionario
@@ -11,6 +16,7 @@ def actualizar_label(labels_dict, nombre, nuevo_texto):
     if nombre in labels_dict:
         labels_dict[nombre].config(text=nuevo_texto)
 def crear_ventana_monitor():
+    global ventana_monitor
     ventana_monitor = tk.Tk()
     ventana_monitor.geometry("1024x600")
     ventana_monitor.config(bg="AntiqueWhite")
@@ -112,10 +118,20 @@ def crear_ventana_monitor():
     labels["label_caudal_data"].pack(side="right", expand=True, padx = 100)
     labels["label_caudal_data"].config(anchor = "e")    
 ####################################################################
+    #BOTON DE REGRESAR
+    boton_regresar_ajustes = tk.Button(ventana_monitor, text="REGRESAR", font=("Arial", 25, "bold"), command=regresar_ajustes,bg="white")
+    boton_regresar_ajustes.pack(fill='x', padx=25, pady=25, side="top", expand=True)
+
+    #BOTON DE ESCAPE
+    boton3 = tk.Button(ventana_monitor, text="ESC", font=("Arial", 16, "bold"), command=escape,bg="white")
+    boton3.pack(fill='x', padx=25, pady=25, side="bottom", expand=True)
+
 
     # Actualizar un label después de un tiempo
     ventana_monitor.after(2000, actualizar_label, labels, "label1", "Texto actualizado para Label 1")
 
     ventana_monitor.mainloop()
 
+def escape():
+    ventana_monitor.attributes('-fullscreen', False)
 #crear_ventana_monitor()
