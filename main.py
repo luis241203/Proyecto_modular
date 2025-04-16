@@ -35,10 +35,10 @@ def crear_ventana_monitor():
     temp_agua_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TEMPERATURA AGUA
-    crear_label(temp_agua_conteiner, "TEMPERATURA AGUA (°C):", "label_temp_agua", labels, 0, "Wheat", "black", 20)
+    crear_label(temp_agua_conteiner, "TEMPERATURA AGUA (°C):", "label_temp_agua", labels, 0, "Wheat", "black", 14)
     labels["label_temp_agua"].pack(side="left", expand=True)
     labels["label_temp_agua"].config(anchor = "w")
-    crear_label(temp_agua_conteiner, "35.6", "label_temp_agua_data", labels, 0, "Wheat", "green", 20)
+    crear_label(temp_agua_conteiner, "35.6", "label_temp_agua_data", labels, 0, "Wheat", "green", 14)
     labels["label_temp_agua_data"].pack(side="right", expand=True, padx = 100)
     labels["label_temp_agua_data"].config(anchor = "e")
 #############################################################################  
@@ -50,10 +50,10 @@ def crear_ventana_monitor():
     temp_amb_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TEMPERATURA AMBIENTE
-    crear_label(temp_amb_conteiner, "TEMPERATURA AMBIENTE (°C):", "label_temp_amb", labels, 0, "Wheat", "black", 20)
+    crear_label(temp_amb_conteiner, "TEMPERATURA AMBIENTE (°C):", "label_temp_amb", labels, 0, "Wheat", "black", 14)
     labels["label_temp_amb"].pack(side="left", expand=True)
     labels["label_temp_amb"].config(anchor = "w")
-    crear_label(temp_amb_conteiner, "40.1", "label_temp_amb_data", labels, 0, "Wheat", "green", 20)
+    crear_label(temp_amb_conteiner, "40.1", "label_temp_amb_data", labels, 0, "Wheat", "green", 14)
     labels["label_temp_amb_data"].pack(side="right", expand=True, padx = 100)
     labels["label_temp_amb_data"].config(anchor = "e")
 #############################################################################   
@@ -65,10 +65,10 @@ def crear_ventana_monitor():
     turb_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TURBIDEZ
-    crear_label(turb_conteiner, "TURBIDEZ (NTU):", "label_turb", labels, 0, "Wheat", "black", 20)
+    crear_label(turb_conteiner, "TURBIDEZ (NTU):", "label_turb", labels, 0, "Wheat", "black", 14)
     labels["label_turb"].pack(side="left", expand=True)
     labels["label_turb"].config(anchor = "w")
-    crear_label(turb_conteiner, "70%", "label_turb_data", labels, 0, "Wheat", "green", 20)
+    crear_label(turb_conteiner, "70%", "label_turb_data", labels, 0, "Wheat", "green", 14)
     labels["label_turb_data"].pack(side="right", expand=True, padx = 100)
     labels["label_turb_data"].config(anchor = "e")
 #############################################################
@@ -80,10 +80,10 @@ def crear_ventana_monitor():
     lum_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL LUMINOSIDAD
-    crear_label(lum_conteiner, "LUMINOSIDAD (%):", "label_lum", labels, 0, "Wheat", "black", 20)
+    crear_label(lum_conteiner, "LUMINOSIDAD (%):", "label_lum", labels, 0, "Wheat", "black", 14)
     labels["label_lum"].pack(side="left", expand=True)
     labels["label_lum"].config(anchor = "w")
-    crear_label(lum_conteiner, "35%", "label_lum_data", labels, 0, "Wheat", "green", 20)
+    crear_label(lum_conteiner, "35%", "label_lum_data", labels, 0, "Wheat", "green", 14)
     labels["label_lum_data"].pack(side="right", expand=True, padx = 100)
     labels["label_lum_data"].config(anchor = "e")
 ################################################################
@@ -95,10 +95,10 @@ def crear_ventana_monitor():
     hum_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL HUMEDAD
-    crear_label(hum_conteiner, "HUMEDAD (%HR):", "label_hum", labels, 0, "Wheat", "black", 20)
+    crear_label(hum_conteiner, "HUMEDAD (%HR):", "label_hum", labels, 0, "Wheat", "black", 14)
     labels["label_hum"].pack(side="left", expand=True)
     labels["label_hum"].config(anchor = "w")
-    crear_label(hum_conteiner, "16%", "label_hum_data", labels, 0, "Wheat", "green", 20)
+    crear_label(hum_conteiner, "16%", "label_hum_data", labels, 0, "Wheat", "green", 14)
     labels["label_hum_data"].pack(side="right", expand=True, padx = 100)
     labels["label_hum_data"].config(anchor = "e")
 ################################################################
@@ -111,10 +111,10 @@ def crear_ventana_monitor():
     caudal_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL CAUDAL
-    crear_label(caudal_conteiner, "CAUDAL (L/min):", "label_caudal", labels, 0, "Wheat", "black", 20)
+    crear_label(caudal_conteiner, "CAUDAL (L/min):", "label_caudal", labels, 0, "Wheat", "black", 14)
     labels["label_caudal"].pack(side="left", expand=True)
     labels["label_caudal"].config(anchor = "w")    
-    crear_label(caudal_conteiner, "20%", "label_caudal_data", labels, 0, "Wheat", "green", 20)
+    crear_label(caudal_conteiner, "20%", "label_caudal_data", labels, 0, "Wheat", "green", 14)
     labels["label_caudal_data"].pack(side="right", expand=True, padx = 100)
     labels["label_caudal_data"].config(anchor = "e")    
 ####################################################################
@@ -127,20 +127,25 @@ def crear_ventana_monitor():
     nivel_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL NIVEL
-    crear_label(nivel_conteiner, "NIVEL (%):", "label_nivel", labels, 0, "Wheat", "black", 20)
+    crear_label(nivel_conteiner, "NIVEL (%):", "label_nivel", labels, 0, "Wheat", "black", 14)
     labels["label_nivel"].pack(side="left", expand=True)
     labels["label_nivel"].config(anchor = "w")    
-    crear_label(nivel_conteiner, "20%", "label_nivel_data", labels, 0, "Wheat", "green", 20)
+    crear_label(nivel_conteiner, "20%", "label_nivel_data", labels, 0, "Wheat", "green", 14)
     labels["label_nivel_data"].pack(side="right", expand=True, padx = 100)
     labels["label_nivel_data"].config(anchor = "e")    
 ####################################################################
-    #BOTON DE REGRESAR
-    boton_regresar_ajustes = tk.Button(ventana_monitor, text="REGRESAR", font=("Arial", 25, "bold"), command=regresar_ajustes,bg="white")
-    boton_regresar_ajustes.pack(fill='x', padx=25, pady=25, side="top", expand=True)
 
-    #BOTON DE ESCAPE
-    boton3 = tk.Button(ventana_monitor, text="ESC", font=("Arial", 16, "bold"), command=escape,bg="white")
-    boton3.pack(fill='x', padx=25, pady=25, side="bottom", expand=True)
+
+    #FRAME DE BOTONES
+    botones_frame = tk.Frame(ventana_monitor, bg="AntiqueWhite")  # Mismo color de fondo
+    botones_frame.pack(pady=20, fill='x', padx=25)  # Ajusta el padding según necesites
+
+    # Modifica los botones para que se empaquen DENTRO del frame:
+    boton_regresar_ajustes = tk.Button(botones_frame, text="REGRESAR", font=("Arial", 14, "bold"), command=regresar_ajustes, bg="white")
+    boton_regresar_ajustes.pack(side="left", expand=True, fill='x', padx=5)  # side="left" para alinearlos horizontalmente
+
+    boton3 = tk.Button(botones_frame, text="ESC", font=("Arial", 14, "bold"), command=escape, bg="white")
+    boton3.pack(side="left", expand=True, fill='x', padx=5)  # side="left" para colocarlo junto al anterior
 
 
     # Actualizar un label después de un tiempo

@@ -69,7 +69,7 @@ def crear_ventana_ajustes():
     temp_agua_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TEMPERATURA AGUA
-    crear_label(temp_agua_conteiner, "RANGO DE TEMPERATURA DEL AGUA (°C):", "label_temp_agua", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(temp_agua_conteiner, "RANGO DE TEMPERATURA DEL AGUA (°C):", "label_temp_agua", labels, 0, "AntiqueWhite", "black", 14)
     labels["label_temp_agua"].pack(side="left", expand=True)
     labels["label_temp_agua"].config(anchor = "w")
     #OBTENCION DE PARAMETROS
@@ -78,11 +78,11 @@ def crear_ventana_ajustes():
     text_temp_agua_max = tk.StringVar()
     textbox_agua_min = ttk.Entry(temp_agua_conteiner, textvariable=text_temp_agua_min, width=10)
     textbox_agua_min.pack(side="left",padx=10, pady=7, fill="both")
-    textbox_agua_min.config(font=("Arial", 20, "bold"))
+    textbox_agua_min.config(font=("Arial", 14, "bold"))
 
     textbox_agua_max = ttk.Entry(temp_agua_conteiner, textvariable=text_temp_agua_max, width=10)
     textbox_agua_max.pack(side="left",padx=10, pady=7, fill="both")
-    textbox_agua_max.config(font=("Arial", 20, "bold"))
+    textbox_agua_max.config(font=("Arial", 14, "bold"))
 #############################################################################  
 
 ##################APARTADO DE TEMPERATURA DEL AMBIENTE#######################
@@ -92,7 +92,7 @@ def crear_ventana_ajustes():
     temp_amb_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TEMPERATURA AMBIENTE
-    crear_label(temp_amb_conteiner, "RANGO DE TEMPERATURA DEL AMBIENTE (°C):", "label_temp_amb", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(temp_amb_conteiner, "RANGO DE TEMPERATURA DEL AMBIENTE (°C):", "label_temp_amb", labels, 0, "AntiqueWhite", "black", 14)
     labels["label_temp_amb"].pack(side="left", expand=True)
     labels["label_temp_amb"].config(anchor = "w")
 
@@ -102,11 +102,11 @@ def crear_ventana_ajustes():
     text_temp_amb_max = tk.StringVar()
     textbox_amb_min = ttk.Entry(temp_amb_conteiner, textvariable=text_temp_amb_min, width=10)
     textbox_amb_min.pack(side="left",padx=10, pady=7, fill="both")
-    textbox_amb_min.config(font=("Arial", 20, "bold"))
+    textbox_amb_min.config(font=("Arial", 14, "bold"))
 
     textbox2_amb_max = ttk.Entry(temp_amb_conteiner, textvariable=text_temp_amb_max, width=10)
     textbox2_amb_max.pack(side="left",padx=10, pady=7, fill="both")
-    textbox2_amb_max.config(font=("Arial", 20, "bold"))
+    textbox2_amb_max.config(font=("Arial", 14, "bold"))
     #temp = textbox.get
 #############################################################################   
 
@@ -117,7 +117,7 @@ def crear_ventana_ajustes():
     turb_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TURBIDEZ
-    crear_label(turb_conteiner, "TURBIDEZ LIMITE (NTU):", "label_turb", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(turb_conteiner, "TURBIDEZ LIMITE (NTU):", "label_turb", labels, 0, "AntiqueWhite", "black", 14)
     labels["label_turb"].pack(side="left", expand=True)
     labels["label_turb"].config(anchor = "w")
     #OBTENCION DE PARAMETROS
@@ -125,7 +125,7 @@ def crear_ventana_ajustes():
     text_turb_max = tk.StringVar()
     textbox2_turb_max = ttk.Entry(turb_conteiner, textvariable=text_turb_max, width=22)
     textbox2_turb_max.pack(side="left",padx=10, pady=7, fill="both")
-    textbox2_turb_max.config(font=("Arial", 20, "bold"))
+    textbox2_turb_max.config(font=("Arial", 14, "bold"))
 #############################################################
 
 ##################APARTADO DE LUMINOSIDAD#######################
@@ -135,7 +135,7 @@ def crear_ventana_ajustes():
     lum_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL LUMINOSIDAD
-    crear_label(lum_conteiner, "LUMINOSIDAD DE BOMBILLA DESEADA (%):", "label_lum", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(lum_conteiner, "LUMINOSIDAD DE BOMBILLA DESEADA (%):", "label_lum", labels, 0, "AntiqueWhite", "black", 14)
     labels["label_lum"].pack(side="left", expand=True)
     labels["label_lum"].config(anchor = "w")
     #OBTENCION DE PARAMETROS
@@ -144,7 +144,7 @@ def crear_ventana_ajustes():
 
     textbox2_lum_max = ttk.Entry(lum_conteiner, textvariable=text_lum_max, width=22)
     textbox2_lum_max.pack(side="left",padx=10, pady=7, fill="both")
-    textbox2_lum_max.config(font=("Arial", 20, "bold"))
+    textbox2_lum_max.config(font=("Arial", 14, "bold"))
 ################################################################
 
 ##################APARTADO DE HUMEDAD#######################
@@ -154,7 +154,7 @@ def crear_ventana_ajustes():
     hum_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL HUMEDAD
-    crear_label(hum_conteiner, "RANGO DE HUMEDAD (%HR):", "label_hum", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(hum_conteiner, "RANGO DE HUMEDAD (%HR):", "label_hum", labels, 0, "AntiqueWhite", "black", 14)
     labels["label_hum"].pack(side="left", expand=True)
     labels["label_hum"].config(anchor = "w")
     #OBTENCION DE PARAMETROS
@@ -163,11 +163,11 @@ def crear_ventana_ajustes():
     text_hum_max = tk.StringVar()
     textbox_hum_min = ttk.Entry(hum_conteiner, textvariable=text_hum_min, width=10)
     textbox_hum_min.pack(side="left",padx=10, pady=7, fill="both")
-    textbox_hum_min.config(font=("Arial", 20, "bold"))
+    textbox_hum_min.config(font=("Arial", 14, "bold"))
 
     textbox2_hum_max = ttk.Entry(hum_conteiner, textvariable=text_hum_max, width=10)
     textbox2_hum_max.pack(side="left",padx=10, pady=7, fill="both")
-    textbox2_hum_max.config(font=("Arial", 20, "bold"))
+    textbox2_hum_max.config(font=("Arial", 14, "bold"))
 ################################################################
 
 
@@ -178,7 +178,7 @@ def crear_ventana_ajustes():
     caudal_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL CAUDAL
-    crear_label(caudal_conteiner, "CAUDAL REQUERIDO (L/min):", "label_caudal", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(caudal_conteiner, "CAUDAL REQUERIDO (L/min):", "label_caudal", labels, 0, "AntiqueWhite", "black", 14)
     labels["label_caudal"].pack(side="left", expand=True)
     labels["label_caudal"].config(anchor = "w")    
     #OBTENCION DE PARAMETROS
@@ -186,7 +186,7 @@ def crear_ventana_ajustes():
     text_caudal_min = tk.StringVar()
     textbox_caudal_min = ttk.Entry(caudal_conteiner, textvariable=text_caudal_min, width=22)
     textbox_caudal_min.pack(side="left",padx=10, pady=7, fill="both")
-    textbox_caudal_min.config(font=("Arial", 20, "bold"))  
+    textbox_caudal_min.config(font=("Arial", 14, "bold"))  
 ####################################################################
 
 
@@ -197,7 +197,7 @@ def crear_ventana_ajustes():
     nivel_conteiner.pack(padx=10,pady=10,fill="x")
 
     # NIVEL nivel
-    crear_label(nivel_conteiner, "NIVEL MINIMO (%):", "label_nivel", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(nivel_conteiner, "NIVEL MINIMO (%):", "label_nivel", labels, 0, "AntiqueWhite", "black", 14)
     labels["label_nivel"].pack(side="left", expand=True)
     labels["label_nivel"].config(anchor = "w")    
     #OBTENCION DE PARAMETROS
@@ -205,26 +205,30 @@ def crear_ventana_ajustes():
     text_nivel_min = tk.StringVar()
     textbox_nivel_min = ttk.Entry(nivel_conteiner, textvariable=text_nivel_min, width=22)
     textbox_nivel_min.pack(side="left",padx=10, pady=7, fill="both")
-    textbox_nivel_min.config(font=("Arial", 20, "bold"))  
+    textbox_nivel_min.config(font=("Arial", 14, "bold"))  
 ####################################################################
 
-    #BOTON DE REGRESAR
-    boton_regresar_ajustes = tk.Button(ventana_ajustes, text="REGRESAR", font=("Arial", 25, "bold"), command=regresar_ajustes,bg="white")
-    boton_regresar_ajustes.pack(fill='x', padx=25, pady=25, side="top", expand=True)
+    #FRAME DE BOTONES
+    botones_frame = tk.Frame(ventana_ajustes, bg="AntiqueWhite")  # Mismo color de fondo
+    botones_frame.pack(pady=20, fill='x', padx=25)  # Ajusta el padding según necesites
+
+    # Modifica los botones para que se empaquen DENTRO del frame:
+    boton_regresar_ajustes = tk.Button(botones_frame, text="REGRESAR", font=("Arial", 14, "bold"), command=regresar_ajustes, bg="white")
+    boton_regresar_ajustes.pack(side="left", expand=True, fill='x', padx=5)  # side="left" para alinearlos horizontalmente
+
+    boton3 = tk.Button(botones_frame, text="ESC", font=("Arial", 14, "bold"), command=escape, bg="white")
+    boton3.pack(side="left", expand=True, fill='x', padx=5)  # side="left" para colocarlo junto al anterior
 
         # BOTON DE GUARDAR CONFIGURACION
     boton_guardar = tk.Button(
-        ventana_ajustes, 
+        botones_frame, 
         text="GUARDAR CONFIGURACIÓN", 
-        font=("Arial", 25, "bold"), 
+        font=("Arial", 14, "bold"), 
         command=guardar_configuracion,
         bg="lightgreen"
-    )
-    boton_guardar.pack(fill='x', padx=25, pady=10, side="top", expand=True)
 
-    #BOTON DE ESCAPE
-    boton3 = tk.Button(ventana_ajustes, text="ESC", font=("Arial", 16, "bold"), command=escape,bg="white")
-    boton3.pack(fill='x', padx=25, pady=25, side="top", expand=True)
+    )
+    boton_guardar.pack(fill='x', padx=25, pady=10, side="left", expand=True)
 
     # Actualizar un label después de un tiempo
     ventana_ajustes.after(2000, actualizar_label, labels, "label1", "Texto actualizado para Label 1")
