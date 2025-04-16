@@ -110,13 +110,29 @@ def crear_ventana_monitor():
     caudal_conteiner = tk.Frame(ventana_monitor,bg="Wheat")
     caudal_conteiner.pack(padx=10,pady=10,fill="x")
 
-    # LABEL PH
+    # LABEL CAUDAL
     crear_label(caudal_conteiner, "CAUDAL :", "label_caudal", labels, 0, "Wheat", "black", 20)
     labels["label_caudal"].pack(side="left", expand=True)
     labels["label_caudal"].config(anchor = "w")    
     crear_label(caudal_conteiner, "20%", "label_caudal_data", labels, 0, "Wheat", "green", 20)
     labels["label_caudal_data"].pack(side="right", expand=True, padx = 100)
     labels["label_caudal_data"].config(anchor = "e")    
+####################################################################
+
+
+##################APARTADO DE nivel################################
+
+    #Creacion de contenedores
+    nivel_conteiner = tk.Frame(ventana_monitor,bg="Wheat")
+    nivel_conteiner.pack(padx=10,pady=10,fill="x")
+
+    # LABEL NIVEL
+    crear_label(nivel_conteiner, "NIVEL :", "label_nivel", labels, 0, "Wheat", "black", 20)
+    labels["label_nivel"].pack(side="left", expand=True)
+    labels["label_nivel"].config(anchor = "w")    
+    crear_label(nivel_conteiner, "20%", "label_nivel_data", labels, 0, "Wheat", "green", 20)
+    labels["label_nivel_data"].pack(side="right", expand=True, padx = 100)
+    labels["label_nivel_data"].config(anchor = "e")    
 ####################################################################
     #BOTON DE REGRESAR
     boton_regresar_ajustes = tk.Button(ventana_monitor, text="REGRESAR", font=("Arial", 25, "bold"), command=regresar_ajustes,bg="white")
