@@ -1,0 +1,10 @@
+temp_agua_min=30.0
+temp_agua_max=40.0
+temp_amb_min=30.0
+temp_amb_max=40.0
+turb_max=80.0
+lum_max=50.0
+hum_min=30.0
+hum_max=50.0
+caudal_min=22.0
+nivel_min=90.0

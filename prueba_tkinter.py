@@ -13,4 +13,8 @@ scale.pack()
 # Para obtener el valor:
 Button(root, text="Obtener valor", command=lambda: print(scale.get())).pack()
 
+# Spinbox con valores del 0 al 100, incrementos de 1
+spinbox = Spinbox(root, from_=90, to=100, increment=1)
+spinbox.pack()
+
 root.mainloop()

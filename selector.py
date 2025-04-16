@@ -25,7 +25,7 @@ def create_select():
     root.attributes('-fullscreen', True)
     root.bind('<Escape>', lambda e: root.attributes('-fullscreen', False))
     labels = {}
-    image = tk.PhotoImage(file="sources\logo_ambiente.png")
+    image = tk.PhotoImage(file="sources/logo_ambiente.png")
     resized_img = image.subsample(10, 10)
     # LABEL DE BIENVENIDA
 
