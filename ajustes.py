@@ -19,11 +19,11 @@ def guardar_configuracion():
         }
         
         # Verificar que los mínimos sean menores que los máximos
-        for param in ['temp_agua', 'temp_amb', 'turb', 'lum', 'hum']:
-            min_val = configuracion[f'{param}_min']
-            max_val = configuracion[f'{param}_max']
-            if min_val >= max_val:
-                raise ValueError(f"El mínimo de {param} debe ser menor que el máximo")
+        #for param in ['temp_agua', 'temp_amb', 'turb', 'lum', 'hum']:
+        #    min_val = configuracion[f'{param}_min']
+        #    max_val = configuracion[f'{param}_max']
+        #    if min_val >= max_val:
+        #        raise ValueError(f"El mínimo de {param} debe ser menor que el máximo")
         
         # Guardar en archivo
         with open('configuracion_acuaponica.txt', 'w') as archivo:
@@ -69,7 +69,7 @@ def crear_ventana_ajustes():
     temp_agua_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TEMPERATURA AGUA
-    crear_label(temp_agua_conteiner, "RANGO DE TEMPERATURA DEL AGUA :", "label_temp_agua", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(temp_agua_conteiner, "RANGO DE TEMPERATURA DEL AGUA (°C):", "label_temp_agua", labels, 0, "AntiqueWhite", "black", 20)
     labels["label_temp_agua"].pack(side="left", expand=True)
     labels["label_temp_agua"].config(anchor = "w")
     #OBTENCION DE PARAMETROS
@@ -92,7 +92,7 @@ def crear_ventana_ajustes():
     temp_amb_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TEMPERATURA AMBIENTE
-    crear_label(temp_amb_conteiner, "RANGO DE TEMPERATURA DEL AMBIENTE :", "label_temp_amb", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(temp_amb_conteiner, "RANGO DE TEMPERATURA DEL AMBIENTE (°C):", "label_temp_amb", labels, 0, "AntiqueWhite", "black", 20)
     labels["label_temp_amb"].pack(side="left", expand=True)
     labels["label_temp_amb"].config(anchor = "w")
 
@@ -117,7 +117,7 @@ def crear_ventana_ajustes():
     turb_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL TURBIDEZ
-    crear_label(turb_conteiner, "TURBIDEZ LIMITE :", "label_turb", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(turb_conteiner, "TURBIDEZ LIMITE (NTU):", "label_turb", labels, 0, "AntiqueWhite", "black", 20)
     labels["label_turb"].pack(side="left", expand=True)
     labels["label_turb"].config(anchor = "w")
     #OBTENCION DE PARAMETROS
@@ -135,7 +135,7 @@ def crear_ventana_ajustes():
     lum_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL LUMINOSIDAD
-    crear_label(lum_conteiner, "LUMINOSIDAD  DESEADA :", "label_lum", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(lum_conteiner, "LUMINOSIDAD DE BOMBILLA DESEADA (%):", "label_lum", labels, 0, "AntiqueWhite", "black", 20)
     labels["label_lum"].pack(side="left", expand=True)
     labels["label_lum"].config(anchor = "w")
     #OBTENCION DE PARAMETROS
@@ -154,7 +154,7 @@ def crear_ventana_ajustes():
     hum_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL HUMEDAD
-    crear_label(hum_conteiner, "HUMEDAD DESEADA :", "label_hum", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(hum_conteiner, "RANGO DE HUMEDAD (%HR):", "label_hum", labels, 0, "AntiqueWhite", "black", 20)
     labels["label_hum"].pack(side="left", expand=True)
     labels["label_hum"].config(anchor = "w")
     #OBTENCION DE PARAMETROS
@@ -178,7 +178,7 @@ def crear_ventana_ajustes():
     caudal_conteiner.pack(padx=10,pady=10,fill="x")
 
     # LABEL CAUDAL
-    crear_label(caudal_conteiner, "CAUDAL REQUERIDO:", "label_caudal", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(caudal_conteiner, "CAUDAL REQUERIDO (L/min):", "label_caudal", labels, 0, "AntiqueWhite", "black", 20)
     labels["label_caudal"].pack(side="left", expand=True)
     labels["label_caudal"].config(anchor = "w")    
     #OBTENCION DE PARAMETROS
@@ -197,7 +197,7 @@ def crear_ventana_ajustes():
     nivel_conteiner.pack(padx=10,pady=10,fill="x")
 
     # NIVEL nivel
-    crear_label(nivel_conteiner, "NIVEL MINIMO:", "label_nivel", labels, 0, "AntiqueWhite", "black", 20)
+    crear_label(nivel_conteiner, "NIVEL MINIMO (%):", "label_nivel", labels, 0, "AntiqueWhite", "black", 20)
     labels["label_nivel"].pack(side="left", expand=True)
     labels["label_nivel"].config(anchor = "w")    
     #OBTENCION DE PARAMETROS
