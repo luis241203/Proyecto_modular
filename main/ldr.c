@@ -14,7 +14,7 @@ void return_read(void *pvParameters)
         adc_oneshot_unit_handle_t *adc1_handle = (adc_oneshot_unit_handle_t *)pvParameters;
         ESP_ERROR_CHECK(adc_oneshot_read(adc1_handle, EXAMPLE_ADC1_CHAN0, &adc_raw[0][0]));
         ESP_LOGI(TAG, "ADC%d Channel[%d] Raw Data: %d", ADC_UNIT_1 + 1, EXAMPLE_ADC1_CHAN0, adc_raw[0][0]);
-        if (adc_raw[0][0] > 3000)
+        /*if (adc_raw[0][0] > 3000)
         {
             gpio_set_level(GPIO_NUM,1);
             ESP_LOGI(TAG, "LED ON\n");
@@ -23,7 +23,7 @@ void return_read(void *pvParameters)
         {
             ESP_LOGI(TAG, "LED OFF\n");
             gpio_set_level(GPIO_NUM,0);
-        } 
+        }*/
         
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
