@@ -119,7 +119,6 @@ if __name__ == "__main__":
             while True:
 
                 write_register(REG_OP_MODE, 0x85)
-                print("Paquete válido recibido!")
                 data = receive_data()
                 #write_register(REG_IRQ_FLAGS, 0xFF)
                 time.sleep(0.5)  # Pequeña pausa para evitar sobrecarga
