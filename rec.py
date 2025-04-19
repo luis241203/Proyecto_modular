@@ -111,8 +111,6 @@ def lora_recibido():
 
 if __name__ == "__main__":
     try:
-        # Configurar DIO0 como entrada (para interrupción)
-        GPIO.setup(DIO0_PIN, GPIO.IN)
         
         if init_lora():
             print("Esperando datos...", end='\r')
