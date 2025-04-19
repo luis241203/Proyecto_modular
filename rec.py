@@ -111,19 +111,20 @@ def lora_recibido():
 
 if __name__ == "__main__":
     try:
-        
         if init_lora():
-            print("Esperando datos...", end='\r')
+            print("Esperando datos en 433 MHz...")
             while True:
-
-                write_register(REG_OP_MODE, 0x85)
-                data = receive_data()
-                #write_register(REG_IRQ_FLAGS, 0xFF)
-                time.sleep(0.5)  # Pequeña pausa para evitar sobrecarga
+                if lora_recibido():
+                    data = receive_data()
+                    if data:
+                        print(f"Datos recibidos: {bytes(data).decode('latin-1')}")
+                    # Limpiar flags y volver a modo RX
+                    write_register(REG_IRQ_FLAGS, 0xFF)
+                    write_register(REG_OP_MODE, 0x85)
+                time.sleep(0.1)
                 
     except KeyboardInterrupt:
         print("Recepción detenida")
     finally:
         spi.close()
         GPIO.cleanup()
-
