@@ -78,8 +78,10 @@ def receive_data():
     # Verificar si hay datos recibidos
     
     if ((irq_flags & IRQ_RX_DONE_MASK) == 0):
+        print("linea 81")
         return 0
     if (irq_flags & 0x20):
+        print("error del crc")
         return 0
     # Obtener longitud del paquete
     length = read_register(REG_RX_NB_BYTES)
@@ -119,7 +121,6 @@ if __name__ == "__main__":
                 write_register(REG_OP_MODE, 0x85)
                 print("Paquete válido recibido!")
                 data = receive_data()
-                #write_register(REG_IRQ_FLAGS, 0xFF)
                 time.sleep(0.5)  # Pequeña pausa para evitar sobrecarga
                 
     except KeyboardInterrupt:
