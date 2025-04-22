@@ -118,10 +118,23 @@ if __name__ == "__main__":
             write_register(REG_OP_MODE, 0x85)
             print("Esperando datos...", end='\r')
             while True:
-                #print("Paquete válido recibido!")
-                data = receive_data()
-                time.sleep(0.5)  # Pequeña pausa para evitar sobrecarga
-                
+                write_register(REG_OP_MODE, 0x85)  # RX continuous
+                time.sleep(0.1)  # un poco de tiempo
+                irq_flags = read_register(REG_IRQ_FLAGS)
+                print(f"IRQ flags: {irq_flags:08b}")  # imprime los flags
+
+                if irq_flags & 0x10:
+                    print("Timeout, no se capturó nada.")
+                    write_register(REG_IRQ_FLAGS, 0x10)  # limpiar Timeout
+                elif irq_flags & 0x20:
+                    print("Error CRC, se capturó algo mal.")
+                    write_register(REG_IRQ_FLAGS, 0x20)  # limpiar error
+                elif irq_flags & 0x40:
+                    print("Paquete recibido bien!")
+                    receive_data()
+                else:
+                    print("Sin eventos especiales.")
+
     except KeyboardInterrupt:
         print("Recepción detenida")
     finally:
