@@ -91,7 +91,7 @@ def send_data(data):
     write_register(REG_OP_MODE, 0x83)
     
     # Esperar fin de transmisión (máximo 5 segundos)
-    timeout = time.time() + 5
+    timeout = time.time() + 10
     while (read_register(REG_IRQ_FLAGS) & 0x08) == 0:
         if time.time() > timeout:
             print("Error: Timeout en transmisión")
@@ -116,7 +116,7 @@ if __name__ == "__main__":
                 send_data(payload)
                 
                 counter += 1
-                time.sleep(5)  # Espera 5 segundos entre transmisiones
+                time.sleep(10)  # Espera 5 segundos entre transmisiones
                 
     except KeyboardInterrupt:
         print("Transmisión detenida")
