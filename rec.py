@@ -54,8 +54,8 @@ def init_lora():
         print("Error: Chip no reconocido")
         return False
     
-    write_register(REG_FRF_MSB, 0x6C)  # 433 MHz: 0x6C4000
-    write_register(REG_FRF_MID, 0x40)
+    write_register(REG_FRF_MSB, 0x10)  # 169 MHz
+    write_register(REG_FRF_MID, 0x80)
     write_register(REG_FRF_LSB, 0x00)
     
     # Config modem
