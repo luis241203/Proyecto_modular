@@ -115,10 +115,9 @@ if __name__ == "__main__":
     try:
         # Configurar DIO0 como entrada (para interrupción)
         if init_lora():
+            write_register(REG_OP_MODE, 0x85)
             print("Esperando datos...", end='\r')
             while True:
-
-                write_register(REG_OP_MODE, 0x85)
                 #print("Paquete válido recibido!")
                 data = receive_data()
                 time.sleep(0.5)  # Pequeña pausa para evitar sobrecarga
