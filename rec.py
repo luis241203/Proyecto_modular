@@ -88,6 +88,7 @@ def receive_data():
         for _ in range(length):
             data.append(read_register(REG_FIFO))
         
+        text_data = bytes(data).decode('ascii')
         # Leer RSSI y SNR
         rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste para 433MHz
         snr = read_register(REG_PKT_SNR_VALUE) * 0.25
@@ -95,7 +96,8 @@ def receive_data():
         # Limpiar flags
         write_register(REG_IRQ_FLAGS, 0xFF)
         
-        print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
+        #print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
+        print(f"Datos recibidos: {text_data} | RSSI: {rssi} dBm | SNR: {snr} dB")
         return data
     
     return None
