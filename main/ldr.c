@@ -2,61 +2,71 @@
 
 const static char *TAG = "ADC_LDR";
 
-static int adc_raw[2][10];
+int ldr_raw;
+int tur_raw;
 
+int ldr_lim = 2000;
 
-
-void return_read(void *pvParameters)
+void return_read_ldr(void *pvParameters)
 {
     
     while (1)
     {
-        adc_oneshot_unit_handle_t *adc1_handle = (adc_oneshot_unit_handle_t *)pvParameters;
-        ESP_ERROR_CHECK(adc_oneshot_read(adc1_handle, EXAMPLE_ADC1_CHAN0, &adc_raw[0][0]));
-        ESP_LOGI(TAG, "ADC%d Channel[%d] Raw Data: %d", ADC_UNIT_1 + 1, EXAMPLE_ADC1_CHAN0, adc_raw[0][0]);
-        /*if (adc_raw[0][0] > 3000)
+        adc_oneshot_unit_handle_t *ldr_handle = (adc_oneshot_unit_handle_t *)pvParameters;
+        ESP_ERROR_CHECK(adc_oneshot_read(ldr_handle, EXAMPLE_LDR1_CHAN0, &ldr_raw));
+        ESP_ERROR_CHECK(adc_oneshot_read(ldr_handle, EXAMPLE_TUR1_CHAN0, &tur_raw));
+        
+        if (ldr_raw >= ldr_lim)
         {
-            gpio_set_level(GPIO_NUM,1);
-            ESP_LOGI(TAG, "LED ON\n");
+            gpio_set_level(LED_PIN, 1);
         }
         else
         {
-            ESP_LOGI(TAG, "LED OFF\n");
-            gpio_set_level(GPIO_NUM,0);
-        }*/
+            gpio_set_level(LED_PIN, 0);
+        }
         
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
-void configurate_adc()
+void configurate_adc_ldr()
 {
+    /*CONFIGURING THE LEDS*/
+    gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
     //-------------ADC1 Init---------------//
-    adc_oneshot_unit_handle_t adc1_handle;
+    adc_oneshot_unit_handle_t ldr1_handle;
     adc_oneshot_unit_init_cfg_t init_config1 = {
         .unit_id = ADC_UNIT_1,
     };
-    ESP_ERROR_CHECK(adc_oneshot_new_unit(&init_config1, &adc1_handle));
 
-    gpio_set_direction(GPIO_NUM, GPIO_MODE_OUTPUT);
+    ESP_ERROR_CHECK(adc_oneshot_new_unit(&init_config1, &ldr1_handle));
+
     adc_oneshot_chan_cfg_t config = {
     .bitwidth = ADC_BITWIDTH_DEFAULT,
-    .atten = EXAMPLE_ADC_ATTEN,
+    .atten = EXAMPLE_LDR_ATTEN,
     };
 
-    ESP_ERROR_CHECK(adc_oneshot_config_channel(adc1_handle, EXAMPLE_ADC1_CHAN0, &config));
+    adc_oneshot_chan_cfg_t config_turb = {
+        .bitwidth = ADC_BITWIDTH_DEFAULT,
+        .atten = EXAMPLE_TUR_ATTEN,
+        };
+
+    ESP_ERROR_CHECK(adc_oneshot_config_channel(ldr1_handle, EXAMPLE_LDR1_CHAN0, &config));
+    ESP_ERROR_CHECK(adc_oneshot_config_channel(ldr1_handle, EXAMPLE_TUR1_CHAN0, &config_turb));
 
     //-------------ADC1 Calibration Init---------------//
     adc_cali_handle_t adc1_cali_chan0_handle = NULL;
-    example_adc_calibration_init(ADC_UNIT_1, EXAMPLE_ADC1_CHAN0, EXAMPLE_ADC_ATTEN, &adc1_cali_chan0_handle);
+    adc_cali_handle_t adc1_cali_chan1_handle = NULL;
+    example_adc_calibration_init_ldr(ADC_UNIT_1, EXAMPLE_LDR1_CHAN0, EXAMPLE_LDR_ATTEN, &adc1_cali_chan0_handle);
+    example_adc_calibration_init_ldr(ADC_UNIT_1, EXAMPLE_TUR1_CHAN0, EXAMPLE_TUR_ATTEN, &adc1_cali_chan1_handle);
 
     //-------------ADC1 start reading---------------//
-    xTaskCreate(return_read,"sensor_task",4096, (void *)&adc1_handle,1,NULL);
+    xTaskCreate(return_read_ldr,"sensor_ldr_task",4096, (void *)&ldr1_handle,1,NULL);
 
     vTaskDelete(0);
 }
 
-static bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *out_handle)
+static bool example_adc_calibration_init_ldr(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *out_handle)
 {
     adc_cali_handle_t handle = NULL;
     esp_err_t ret = ESP_FAIL;

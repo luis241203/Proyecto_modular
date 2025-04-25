@@ -18,6 +18,8 @@
     "files.associations": {
         "ds18b20.h": "c",
         "gpio.h": "c",
-        "sdkconfig.h": "c"
+        "sdkconfig.h": "c",
+        "adc_oneshot.h": "c",
+        "servos.h": "c"
     }
 }
