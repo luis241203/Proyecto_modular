@@ -89,6 +89,11 @@ def receive_data():
             data.append(read_register(REG_FIFO))
         
         text_data = bytes(data).decode('ascii')
+        valores_separados = text_data.split(',')
+
+        temp_agua, temp_amb, humedad, ldr, tur, ultrasonico = valores_separados
+
+        # Mostramos los valores
         # Leer RSSI y SNR
         rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste para 433MHz
         snr = read_register(REG_PKT_SNR_VALUE) * 0.25
@@ -98,6 +103,13 @@ def receive_data():
         
         #print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
         print(f"Datos recibidos: {text_data} | RSSI: {rssi} dBm | SNR: {snr} dB")
+
+        print(f"Temperatura Agua: {temp_agua}")
+        print(f"Temperatura Ambiente: {temp_amb}")
+        print(f"Humedad: {humedad}")
+        print(f"LDR: {ldr}")
+        print(f"Tur: {tur}")
+        print(f"Ultrasonico: {ultrasonico}")
         return data
     
     return None
