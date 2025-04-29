@@ -172,7 +172,7 @@ def bilateral(queue):
     while True:
         # Enviar una sola 'a'
         payload = [ord('a')]  # <- CAMBIO
-        send_data(queue,payload)
+        send_data(payload)
         
         # Esperar la respuesta
         respuesta = receive_data(queue,timeout_s=5)
