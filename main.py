@@ -1,9 +1,143 @@
 import tkinter as tk
 import selector as select
+import spidev
+import time
+import RPi.GPIO as GPIO
+import threading
+from queue import Queue
+
+# Configuración GPIO
+GPIO.setmode(GPIO.BCM)
+DIO0_PIN = 17  # Pin para interrupción RxDone (opcional pero recomendado)
+RESET_PIN = 22  # Pin de reset
+labels = {}
+
+# Configuración SPI
+spi = spidev.SpiDev()
+spi.open(0, 0)  # Bus 0, CE0
+spi.max_speed_hz = 500000
+spi.mode = 0b00
+
+# Registros SX1278 (para recepción)
+REG_OP_MODE = 0x01
+REG_FRF_MSB = 0x06
+REG_FRF_MID = 0x07
+REG_FRF_LSB = 0x08
+REG_FIFO = 0x00
+REG_FIFO_RX_CURRENT_ADDR = 0x10
+REG_IRQ_FLAGS = 0x12
+REG_RX_NB_BYTES = 0x13
+REG_MODEM_CONFIG1 = 0x1D
+REG_MODEM_CONFIG2 = 0x1E
+REG_PKT_SNR_VALUE = 0x19
+REG_PKT_RSSI_VALUE = 0x1A
+# Registros SX1278 (completos para RX)
+REG_FIFO_ADDR_PTR = 0x0D
+REG_FIFO_RX_BASE_ADDR = 0x0F  # <-- ¡Este faltaba!
+
+def read_register(register):
+    return spi.xfer2([register & 0x7F, 0x00])[1]
+
+def write_register(register, value):
+    spi.xfer2([register | 0x80, value])
 
 def regresar_ajustes():
     ventana_monitor.destroy()
     select.create_select()
+
+def init_lora():
+    # Resetear módulo
+    GPIO.setup(RESET_PIN, GPIO.OUT)
+    GPIO.output(RESET_PIN, GPIO.LOW)
+    time.sleep(0.01)
+    GPIO.output(RESET_PIN, GPIO.HIGH)
+    time.sleep(0.01)
+    
+    # Modo LoRa + Sleep
+    write_register(REG_OP_MODE, 0x80)
+    time.sleep(0.1)
+    
+    # Verificar versión del chip
+    if read_register(0x42) != 0x12:  # REG_VERSION
+        print("Error: Chip no reconocido")
+        return False
+    
+    write_register(REG_FRF_MSB, 0x6C)  # 433 MHz: 0x6C4000
+    write_register(REG_FRF_MID, 0x40)
+    write_register(REG_FRF_LSB, 0x00)
+    
+    # Config modem
+    write_register(REG_MODEM_CONFIG1, 0x72)  # BW=125kHz, CR=4/5
+    write_register(REG_MODEM_CONFIG2, 0x74)  # SF=7, CRC enabled
+    
+    # Config FIFO RX
+    write_register(REG_FIFO_RX_BASE_ADDR, 0x00)  # Dirección base RX
+    write_register(REG_FIFO_ADDR_PTR, 0x00)       # Resetear puntero
+    
+    # Modo RX continuo
+    write_register(REG_OP_MODE, 0x85)
+    time.sleep(0.1)
+    
+    print("LoRa listo para recibir")
+    return True
+
+def receive_data(queue):
+    while True:
+        time.sleep(1) 
+        # Verificar si hay datos recibidos
+        irq_flags = read_register(REG_IRQ_FLAGS)
+        
+        if irq_flags & 0x40:  # RxDone
+            # Obtener longitud del paquete
+            length = read_register(REG_RX_NB_BYTES)
+            
+            # Leer datos del FIFO
+            current_addr = read_register(REG_FIFO_RX_CURRENT_ADDR)
+            write_register(0x0D, current_addr)  # FIFO_ADDR_PTR
+            
+            data = []
+            for _ in range(length):
+                data.append(read_register(REG_FIFO))
+            
+            text_data = bytes(data).decode('ascii')
+            valores_separados = text_data.split(',')
+
+            temp_agua, temp_amb, humedad, ldr, tur, ultrasonico = valores_separados
+
+            # Mostramos los valores
+            # Leer RSSI y SNR
+            rssi = read_register(REG_PKT_RSSI_VALUE) - 164  # Ajuste para 433MHz
+            snr = read_register(REG_PKT_SNR_VALUE) * 0.25
+            
+            # Limpiar flags
+            write_register(REG_IRQ_FLAGS, 0xFF)
+            
+            #print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
+            print(f"Datos recibidos: {text_data} | RSSI: {rssi} dBm | SNR: {snr} dB")
+
+            print(f"Temperatura Agua: {temp_agua}")
+            print(f"Temperatura Ambiente: {temp_amb}")
+            print(f"Humedad: {humedad}")
+            print(f"LDR: {ldr}")
+            print(f"Tur: {tur}")
+            print(f"Ultrasonico: {ultrasonico}")
+            queue.put(temp_agua,temp_amb,humedad,ldr,tur,ultrasonico)
+            return data
+    
+    return None
+
+def poner_valores_lora(queue):
+    try:
+        temp_agua, temp_amb, humedad, ldr, tur, ultrasonico = queue.get_nowait()
+        actualizar_label(labels,"label_temp_agua_data",temp_agua)
+        actualizar_label(labels,"label_temp_amb_data",temp_amb)
+        actualizar_label(labels,"label_turb_data",tur)
+        actualizar_label(labels,"label_lum_data",ldr)
+        actualizar_label(labels,"label_hum_data",humedad)
+        actualizar_label(labels,"label_nivel_data",ultrasonico)
+    except:
+        pass
+    ventana_monitor.after(100, poner_valores_lora, queue)
 
 def crear_label(ventana_monitor, texto, nombre, labels_dict, border, color, letra_color, size_letra):
     # Crear un nuevo Label y agregarlo al diccionario
@@ -24,7 +158,6 @@ def crear_ventana_monitor():
     ventana_monitor.bind('<Escape>', lambda e: ventana_monitor.attributes('-fullscreen', False))
 
     # Diccionario para almacenar los labels
-    labels = {}
     # LABEL DE BIENVENIDA
     crear_label(ventana_monitor, "ACUAPONIC MONITOR", "label_Welcome", labels, 0, "#F0E68C", "black", 25)
 
@@ -147,9 +280,18 @@ def crear_ventana_monitor():
     boton3 = tk.Button(botones_frame, text="ESC", font=("Arial", 14, "bold"), command=escape, bg="white")
     boton3.pack(side="left", expand=True, fill='x', padx=5)  # side="left" para colocarlo junto al anterior
 
+    queue = Queue()
+
+    thread_lora = threading.Thread(target=receive_data, args=(queue,))
+    thread_lora.daemon = True  # Este hilo se cerrará cuando se cierre la aplicación principal
+    thread_lora.start()
+
+    # Iniciar la actualización de la interfaz de Tkinter
+    poner_valores_lora(queue)
+
 
     # Actualizar un label después de un tiempo
-    ventana_monitor.after(2000, actualizar_label, labels, "label1", "Texto actualizado para Label 1")
+    #ventana_monitor.after(2000, actualizar_label, labels, "label1", "Texto actualizado para Label 1")
 
     ventana_monitor.mainloop()
 
