@@ -111,8 +111,11 @@ def receive_data(queue):
             for _ in range(length):
                 data.append(read_register(REG_FIFO))
             
-            text_data = bytes(data).decode('ascii')
-            valores_separados = text_data.split(',')
+            try:
+                text_data = bytes(data).decode('ascii')
+                valores_separados = text_data.split(',')
+            except:
+                pass
 
             temp_agua, temp_amb, humedad, ldr, tur, ultrasonico = valores_separados
 
@@ -127,12 +130,12 @@ def receive_data(queue):
             #print(f"Datos recibidos: {data} | RSSI: {rssi} dBm | SNR: {snr} dB")
             print(f"Datos recibidos: {text_data} | RSSI: {rssi} dBm | SNR: {snr} dB")
 
-            print(f"Temperatura Agua: {temp_agua}")
-            print(f"Temperatura Ambiente: {temp_amb}")
-            print(f"Humedad: {humedad}")
-            print(f"LDR: {ldr}")
-            print(f"Tur: {tur}")
-            print(f"Ultrasonico: {ultrasonico}")
+            #print(f"Temperatura Agua: {temp_agua}")
+            #print(f"Temperatura Ambiente: {temp_amb}")
+            #print(f"Humedad: {humedad}")
+            #print(f"LDR: {ldr}")
+            #print(f"Tur: {tur}")
+           # print(f"Ultrasonico: {ultrasonico}")
             queue.put((temp_agua,temp_amb,humedad,ldr,tur,ultrasonico))
 
 
@@ -293,6 +296,7 @@ def crear_ventana_monitor():
     queue = Queue()
     if (init_lora() != True):
         print("no se inicio bien el modulo LoRa")
+        regresar_ajustes()
 
     thread_lora = threading.Thread(target=receive_data, args=(queue,))
     thread_lora.daemon = True  # Este hilo se cerrará cuando se cierre la aplicación principal
