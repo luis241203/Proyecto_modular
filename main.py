@@ -168,14 +168,14 @@ def receive_data(queue,timeout_s=5):
             break
         time.sleep(0.05)
 
-def bilateral():
+def bilateral(queue):
     while True:
         # Enviar una sola 'a'
         payload = [ord('a')]  # <- CAMBIO
-        send_data(payload)
+        send_data(queue,payload)
         
         # Esperar la respuesta
-        respuesta = receive_data(timeout_s=5)
+        respuesta = receive_data(queue,timeout_s=5)
         
         if respuesta:
             print("Recibido")
