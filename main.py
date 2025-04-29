@@ -121,10 +121,9 @@ def receive_data(queue):
             print(f"LDR: {ldr}")
             print(f"Tur: {tur}")
             print(f"Ultrasonico: {ultrasonico}")
-            queue.put(temp_agua,temp_amb,humedad,ldr,tur,ultrasonico)
+            queue.put((temp_agua,temp_amb,humedad,ldr,tur,ultrasonico))
             return data
-    
-    return None
+
 
 def poner_valores_lora(queue):
     try:
