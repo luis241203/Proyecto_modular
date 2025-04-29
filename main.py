@@ -117,7 +117,7 @@ def receive_data(queue):
             except:
                 pass
 
-            temp_agua, temp_amb, humedad, ldr, tur, ultrasonico = valores_separados
+            temp_agua, temp_amb, humedad, ldr, tur, ultrasonico, caudal = valores_separados
 
             # Mostramos los valores
             # Leer RSSI y SNR
@@ -136,18 +136,19 @@ def receive_data(queue):
             #print(f"LDR: {ldr}")
             #print(f"Tur: {tur}")
            # print(f"Ultrasonico: {ultrasonico}")
-            queue.put((temp_agua,temp_amb,humedad,ldr,tur,ultrasonico))
+            queue.put((temp_agua,temp_amb,humedad,ldr,tur,ultrasonico, caudal))
 
 
 def poner_valores_lora(queue):
     try:
-        temp_agua, temp_amb, humedad, ldr, tur, ultrasonico = queue.get_nowait()
+        temp_agua, temp_amb, humedad, ldr, tur, ultrasonico, caudal = queue.get_nowait()
         actualizar_label(labels,"label_temp_agua_data",temp_agua)
         actualizar_label(labels,"label_temp_amb_data",temp_amb)
         actualizar_label(labels,"label_turb_data",tur)
         actualizar_label(labels,"label_lum_data",ldr)
         actualizar_label(labels,"label_hum_data",humedad)
         actualizar_label(labels,"label_nivel_data",ultrasonico)
+        actualizar_label(labels,"label_caudal_data",caudal)
     except:
         pass
     ventana_monitor.after(100, poner_valores_lora, queue)
