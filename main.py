@@ -232,7 +232,7 @@ def crear_ventana_monitor():
     crear_label(temp_agua_conteiner, "TEMPERATURA AGUA (°C):", "label_temp_agua", labels, 0, "Wheat", "black", 14)
     labels["label_temp_agua"].pack(side="left", expand=True)
     labels["label_temp_agua"].config(anchor = "w")
-    crear_label(temp_agua_conteiner, "35.6", "label_temp_agua_data", labels, 0, "Wheat", "green", 14)
+    crear_label(temp_agua_conteiner, "---", "label_temp_agua_data", labels, 0, "Wheat", "green", 14)
     labels["label_temp_agua_data"].pack(side="right", expand=True, padx = 100)
     labels["label_temp_agua_data"].config(anchor = "e")
 #############################################################################  
@@ -247,7 +247,7 @@ def crear_ventana_monitor():
     crear_label(temp_amb_conteiner, "TEMPERATURA AMBIENTE (°C):", "label_temp_amb", labels, 0, "Wheat", "black", 14)
     labels["label_temp_amb"].pack(side="left", expand=True)
     labels["label_temp_amb"].config(anchor = "w")
-    crear_label(temp_amb_conteiner, "40.1", "label_temp_amb_data", labels, 0, "Wheat", "green", 14)
+    crear_label(temp_amb_conteiner, "---", "label_temp_amb_data", labels, 0, "Wheat", "green", 14)
     labels["label_temp_amb_data"].pack(side="right", expand=True, padx = 100)
     labels["label_temp_amb_data"].config(anchor = "e")
 #############################################################################   
@@ -262,7 +262,7 @@ def crear_ventana_monitor():
     crear_label(turb_conteiner, "TURBIDEZ (NTU):", "label_turb", labels, 0, "Wheat", "black", 14)
     labels["label_turb"].pack(side="left", expand=True)
     labels["label_turb"].config(anchor = "w")
-    crear_label(turb_conteiner, "70%", "label_turb_data", labels, 0, "Wheat", "green", 14)
+    crear_label(turb_conteiner, "---", "label_turb_data", labels, 0, "Wheat", "green", 14)
     labels["label_turb_data"].pack(side="right", expand=True, padx = 100)
     labels["label_turb_data"].config(anchor = "e")
 #############################################################
@@ -277,7 +277,7 @@ def crear_ventana_monitor():
     crear_label(lum_conteiner, "LUMINOSIDAD (%):", "label_lum", labels, 0, "Wheat", "black", 14)
     labels["label_lum"].pack(side="left", expand=True)
     labels["label_lum"].config(anchor = "w")
-    crear_label(lum_conteiner, "35%", "label_lum_data", labels, 0, "Wheat", "green", 14)
+    crear_label(lum_conteiner, "---", "label_lum_data", labels, 0, "Wheat", "green", 14)
     labels["label_lum_data"].pack(side="right", expand=True, padx = 100)
     labels["label_lum_data"].config(anchor = "e")
 ################################################################
@@ -292,7 +292,7 @@ def crear_ventana_monitor():
     crear_label(hum_conteiner, "HUMEDAD (%HR):", "label_hum", labels, 0, "Wheat", "black", 14)
     labels["label_hum"].pack(side="left", expand=True)
     labels["label_hum"].config(anchor = "w")
-    crear_label(hum_conteiner, "16%", "label_hum_data", labels, 0, "Wheat", "green", 14)
+    crear_label(hum_conteiner, "---", "label_hum_data", labels, 0, "Wheat", "green", 14)
     labels["label_hum_data"].pack(side="right", expand=True, padx = 100)
     labels["label_hum_data"].config(anchor = "e")
 ################################################################
@@ -308,7 +308,7 @@ def crear_ventana_monitor():
     crear_label(caudal_conteiner, "CAUDAL (L/min):", "label_caudal", labels, 0, "Wheat", "black", 14)
     labels["label_caudal"].pack(side="left", expand=True)
     labels["label_caudal"].config(anchor = "w")    
-    crear_label(caudal_conteiner, "20%", "label_caudal_data", labels, 0, "Wheat", "green", 14)
+    crear_label(caudal_conteiner, "---", "label_caudal_data", labels, 0, "Wheat", "green", 14)
     labels["label_caudal_data"].pack(side="right", expand=True, padx = 100)
     labels["label_caudal_data"].config(anchor = "e")    
 ####################################################################
@@ -324,7 +324,7 @@ def crear_ventana_monitor():
     crear_label(nivel_conteiner, "NIVEL (%):", "label_nivel", labels, 0, "Wheat", "black", 14)
     labels["label_nivel"].pack(side="left", expand=True)
     labels["label_nivel"].config(anchor = "w")    
-    crear_label(nivel_conteiner, "20%", "label_nivel_data", labels, 0, "Wheat", "green", 14)
+    crear_label(nivel_conteiner, "---", "label_nivel_data", labels, 0, "Wheat", "green", 14)
     labels["label_nivel_data"].pack(side="right", expand=True, padx = 100)
     labels["label_nivel_data"].config(anchor = "e")    
 ####################################################################
