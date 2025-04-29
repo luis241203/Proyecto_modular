@@ -18,22 +18,25 @@ spi.open(0, 0)  # Bus 0, CE0
 spi.max_speed_hz = 500000
 spi.mode = 0b00
 
-# Registros SX1278 (para recepción)
+# Registros SX1278
 REG_OP_MODE = 0x01
 REG_FRF_MSB = 0x06
 REG_FRF_MID = 0x07
 REG_FRF_LSB = 0x08
-REG_FIFO = 0x00
-REG_FIFO_RX_CURRENT_ADDR = 0x10
-REG_IRQ_FLAGS = 0x12
-REG_RX_NB_BYTES = 0x13
+REG_PA_CONFIG = 0x09
 REG_MODEM_CONFIG1 = 0x1D
 REG_MODEM_CONFIG2 = 0x1E
+REG_FIFO_ADDR_PTR = 0x0D
+REG_FIFO_TX_BASE_ADDR = 0x0E
+REG_FIFO = 0x00
+REG_PAYLOAD_LENGTH = 0x22
+REG_IRQ_FLAGS = 0x12
+REG_VERSION = 0x42
+REG_FIFO_RX_CURRENT_ADDR = 0x10
+REG_RX_NB_BYTES = 0x13
 REG_PKT_SNR_VALUE = 0x19
 REG_PKT_RSSI_VALUE = 0x1A
-# Registros SX1278 (completos para RX)
-REG_FIFO_ADDR_PTR = 0x0D
-REG_FIFO_RX_BASE_ADDR = 0x0F  # <-- ¡Este faltaba!
+REG_FIFO_RX_BASE_ADDR = 0x0F  # <- importante
 
 def cerrar_app():
     print("Cerrando aplicación...")
@@ -58,44 +61,66 @@ def regresar_ajustes():
     select.create_select()
 
 def init_lora():
-    # Resetear módulo
     GPIO.setup(RESET_PIN, GPIO.OUT)
     GPIO.output(RESET_PIN, GPIO.LOW)
     time.sleep(0.01)
     GPIO.output(RESET_PIN, GPIO.HIGH)
     time.sleep(0.01)
     
-    # Modo LoRa + Sleep
-    write_register(REG_OP_MODE, 0x80)
+    write_register(REG_OP_MODE, 0x80)  # Sleep + LoRa
     time.sleep(0.1)
     
-    # Verificar versión del chip
-    if read_register(0x42) != 0x12:  # REG_VERSION
+    if read_register(REG_VERSION) != 0x12:
         print("Error: Chip no reconocido")
         return False
     
-    write_register(REG_FRF_MSB, 0x6C)  # 433 MHz: 0x6C4000
+    write_register(REG_FRF_MSB, 0x6C)
     write_register(REG_FRF_MID, 0x40)
     write_register(REG_FRF_LSB, 0x00)
     
-    # Config modem
-    write_register(REG_MODEM_CONFIG1, 0x72)  # BW=125kHz, CR=4/5
-    write_register(REG_MODEM_CONFIG2, 0x74)  # SF=7, CRC enabled
+    write_register(REG_MODEM_CONFIG1, 0x72)
+    write_register(REG_MODEM_CONFIG2, 0x74)
     
-    # Config FIFO RX
-    write_register(REG_FIFO_RX_BASE_ADDR, 0x00)  # Dirección base RX
-    write_register(REG_FIFO_ADDR_PTR, 0x00)       # Resetear puntero
+    write_register(REG_PA_CONFIG, 0x8F)
     
-    # Modo RX continuo
-    write_register(REG_OP_MODE, 0x85)
+    write_register(REG_FIFO_TX_BASE_ADDR, 0x80)
+    write_register(REG_FIFO_RX_BASE_ADDR, 0x00)  # <- importante para recepción correcta
+
+    write_register(REG_OP_MODE, 0x81)  # Standby
     time.sleep(0.1)
     
-    print("LoRa listo para recibir")
+    print("LoRa listo para transmitir y recibir")
     return True
 
-def receive_data(queue):
+def send_data(data):
+    write_register(REG_OP_MODE, 0x81)  # standby
+    time.sleep(0.05)
+    
+    write_register(REG_FIFO_ADDR_PTR, 0x80)
+    
+    for byte in data:
+        write_register(REG_FIFO, byte)
+    
+    write_register(REG_PAYLOAD_LENGTH, len(data))
+    write_register(REG_OP_MODE, 0x83)  # modo transmisión
+    
+    timeout = time.time() + 5
+    while (read_register(REG_IRQ_FLAGS) & 0x08) == 0:
+        if time.time() > timeout:
+            print("Error: Timeout en transmisión")
+            break
+        time.sleep(0.05)
+    
+    write_register(REG_IRQ_FLAGS, 0x08)  # limpiar TxDone
+    write_register(REG_OP_MODE, 0x81)  # standby
+    
+    #print(f"Datos enviados: {data}")
+
+def receive_data(queue,timeout_s=5):
+    write_register(REG_OP_MODE, 0x85)  # Modo recepción continua
+    start_time = time.time()
     while True:
-        time.sleep(1) 
+         
         # Verificar si hay datos recibidos
         irq_flags = read_register(REG_IRQ_FLAGS)
         
@@ -137,7 +162,27 @@ def receive_data(queue):
             #print(f"Tur: {tur}")
            # print(f"Ultrasonico: {ultrasonico}")
             queue.put((temp_agua,temp_amb,humedad,ldr,tur,ultrasonico, caudal))
+        if time.time() - start_time > timeout_s:
+            print("Timeout esperando respuesta")
+            write_register(REG_IRQ_FLAGS, 0xFF)  # limpiar flags
+            break
+        time.sleep(0.05)
 
+def bilateral():
+    while True:
+        # Enviar una sola 'a'
+        payload = [ord('a')]  # <- CAMBIO
+        send_data(payload)
+        
+        # Esperar la respuesta
+        respuesta = receive_data(timeout_s=5)
+        
+        if respuesta:
+            print("Recibido")
+        else:
+            print("No se recibió respuesta")
+        
+        time.sleep(5)  # Esperar antes de volver a enviar
 
 def poner_valores_lora(queue):
     try:
@@ -299,7 +344,7 @@ def crear_ventana_monitor():
         print("no se inicio bien el modulo LoRa")
         regresar_ajustes()
 
-    thread_lora = threading.Thread(target=receive_data, args=(queue,))
+    thread_lora = threading.Thread(target=bilateral, args=(queue,))
     thread_lora.daemon = True  # Este hilo se cerrará cuando se cierre la aplicación principal
     thread_lora.start()
 
