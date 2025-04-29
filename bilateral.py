@@ -141,7 +141,7 @@ if __name__ == "__main__":
                 respuesta = receive_data(timeout_s=5)
                 
                 if respuesta:
-                    print(f"Respuesta recibida: {respuesta}")
+                    print("Recibido")
                 else:
                     print("No se recibió respuesta")
                 
