@@ -281,6 +281,8 @@ def crear_ventana_monitor():
     boton3.pack(side="left", expand=True, fill='x', padx=5)  # side="left" para colocarlo junto al anterior
 
     queue = Queue()
+    if (init_lora() != True):
+        print("no se inicio bien el modulo LoRa")
 
     thread_lora = threading.Thread(target=receive_data, args=(queue,))
     thread_lora.daemon = True  # Este hilo se cerrará cuando se cierre la aplicación principal
