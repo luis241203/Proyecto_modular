@@ -162,11 +162,13 @@ def receive_data(queue,timeout_s=5):
             #print(f"Tur: {tur}")
            # print(f"Ultrasonico: {ultrasonico}")
             queue.put((temp_agua,temp_amb,humedad,ldr,tur,ultrasonico, caudal))
+            return text_data
         if time.time() - start_time > timeout_s:
             print("Timeout esperando respuesta")
             write_register(REG_IRQ_FLAGS, 0xFF)  # limpiar flags
             break
         time.sleep(0.05)
+    return None
 
 def bilateral(queue):
     while True:
