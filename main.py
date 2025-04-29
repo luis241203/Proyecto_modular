@@ -35,6 +35,18 @@ REG_PKT_RSSI_VALUE = 0x1A
 REG_FIFO_ADDR_PTR = 0x0D
 REG_FIFO_RX_BASE_ADDR = 0x0F  # <-- ¡Este faltaba!
 
+def cerrar_app():
+    print("Cerrando aplicación...")
+
+    # Cerrar SPI
+    spi.close()
+
+    # Limpiar GPIO
+    GPIO.cleanup()
+
+    # Cerrar ventana
+    ventana_monitor.destroy()
+
 def read_register(register):
     return spi.xfer2([register & 0x7F, 0x00])[1]
 
@@ -122,7 +134,6 @@ def receive_data(queue):
             print(f"Tur: {tur}")
             print(f"Ultrasonico: {ultrasonico}")
             queue.put((temp_agua,temp_amb,humedad,ldr,tur,ultrasonico))
-            return data
 
 
 def poner_valores_lora(queue):
@@ -293,6 +304,7 @@ def crear_ventana_monitor():
 
     # Actualizar un label después de un tiempo
     #ventana_monitor.after(2000, actualizar_label, labels, "label1", "Texto actualizado para Label 1")
+    ventana_monitor.protocol("WM_DELETE_WINDOW", cerrar_app)
 
     ventana_monitor.mainloop()
 
